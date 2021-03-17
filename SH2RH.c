@@ -22,7 +22,7 @@ int main()
     float azs[5] = {1, 2, 3, 4, 5};
     matrix az = assignMat(sizeof(azs)/sizeof(azs[0]), 1, azs);
     matrix test = eval_SH(3, els, sizeof(els)/sizeof(els[0]), az);
-    
+
     return 0;
 }
 
@@ -33,22 +33,52 @@ int main()
  
  */
 
-matrix eval_SH(int l, float el[], size_t size, matrix az)
+matrix eval_SH(int l, float el[], size_t size_e, matrix az)
 {
     
-    float * azs = malloc(l * sizeof(float));
-    for (int i = 0; i < l; i++)
+    // memory allocation
+    float * azs1 = malloc(l * az.row * sizeof(float));
+    float * azs2 = malloc(l * az.row * sizeof(float));
+    float * ones = malloc(az.row * sizeof(float));
+    
+    // az*(l:-1:1)
+    int counter = 0;
+    for (int i = 0; i < az.row; i++)
     {
-        azs[i] = az.data[l-i-1];
+        for (int j = l; j > 0; j--)
+        {
+            azs1[counter] = j * az.data[i];
+            counter++;
+        }
     }
-    matrix m = assignMat(1, l, azs);
     
-    
-    printMat(az);
+    // az*(1:l)
+    counter = 0;
+    for (int i = 0 ; i < az.row; i++)
+    {
+        for (int j = 0; j < l; j++)
+        {
+            azs2[counter] = j * az.data[i];
+            counter++;
+        }
+    }
+                
+    // ones(size(az,1),1)
+    for (int i = 0; i < az.row; i++)
+    {
+        ones[i] = 1;
+    }
+                
+    matrix m = assignMat(1, l, azs1);
     printMat(m);
+    printf("\n");
     matrix s = multiplyMat(az, m);
-    printf("a\n");
     printMat(s);
+    printf("\n");
+    matrix m1 = assignMat(1, l, azs2);
+    matrix s1 = multiplyMat(az, m1);
+    printMat(s1);
+
     
     if (l != 0)
     {

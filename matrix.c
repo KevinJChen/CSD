@@ -183,6 +183,20 @@ matrix mpinverseMat(matrix mat1)
     return m3;
 }
 
+/* takes sin of each element in matrix */
+matrix sinMat(matrix mat1)
+{
+    matrix mat2 = makeMat(mat1.row, mat1.col);
+    for (int i = 0; i < mat1.row; i++)
+    {
+        for (int j = 0; j < mat1.col; j++)
+        {
+            mat2.data[i*mat1.col+j] = sin(mat1.data[i*mat1.col+j]);
+        }
+    }
+    return mat2;
+}
+
 /* takes cos of each element in matrix*/
 matrix cosMat(matrix mat1)
 {

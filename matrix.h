@@ -32,6 +32,7 @@ float detMat(matrix m);
 matrix scalarMat(float s, matrix mat1);
 matrix inverseMat(matrix mat1);
 matrix mpinverseMat(matrix mat1);
+matrix sinMat(matrix mat1);
 matrix cosMat(matrix mat1);
 
 /* helper */

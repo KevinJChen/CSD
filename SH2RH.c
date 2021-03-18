@@ -22,6 +22,8 @@ int main()
     float azs[5] = {1, 2, 3, 4, 5};
     matrix az = assignMat(sizeof(azs)/sizeof(azs[0]), 1, azs);
     matrix test = eval_SH(3, els, sizeof(els)/sizeof(els[0]), az);
+    
+    printMat(test);
 
     return 0;
 }
@@ -39,7 +41,8 @@ matrix eval_SH(int l, float el[], size_t size_e, matrix az)
     // memory allocation
     float * azs1 = malloc(l * az.row * sizeof(float));
     float * azs2 = malloc(l * az.row * sizeof(float));
-    float * ones = malloc(az.row * sizeof(float));
+    float * o = malloc(az.row * sizeof(float));
+    float * ss = malloc(az.row * (2*l+1) * sizeof(float));
     
     // az*(l:-1:1)
     int counter = 0;
@@ -56,7 +59,7 @@ matrix eval_SH(int l, float el[], size_t size_e, matrix az)
     counter = 0;
     for (int i = 0 ; i < az.row; i++)
     {
-        for (int j = 0; j < l; j++)
+        for (int j = 1; j < l + 1; j++)
         {
             azs2[counter] = j * az.data[i];
             counter++;
@@ -66,24 +69,45 @@ matrix eval_SH(int l, float el[], size_t size_e, matrix az)
     // ones(size(az,1),1)
     for (int i = 0; i < az.row; i++)
     {
-        ones[i] = 1;
+        o[i] = 1;
     }
                 
-    matrix m = assignMat(1, l, azs1);
-    printMat(m);
-    printf("\n");
-    matrix s = multiplyMat(az, m);
-    printMat(s);
-    printf("\n");
-    matrix m1 = assignMat(1, l, azs2);
-    matrix s1 = multiplyMat(az, m1);
-    printMat(s1);
-
+    // sqrt(2* sin(az * l:-1:1))
+    matrix paz = scalarMat(sqrt(2), sinMat(assignMat(az.row, l, azs1)));
+    // s
+    matrix ones = assignMat(az.row, 1, o);
+    // sqrt(2) * cos(az*(1:l))
+    matrix aaz = scalarMat(sqrt(2), cosMat(assignMat(az.row, l, azs2)));
+    
+    matrix s = assignMat(az.row, 1, o);
     
     if (l != 0)
     {
+        counter = 0;
+        for (int i = 0; i < az.row; i++)
+        {
+            for (int j = 0; j < paz.col; j++)
+            {
+                ss[counter] = paz.data[i*paz.col+j];
+                counter++;
+            }
+            for (int j = 0; j < ones.col; j++)
+            {
+                ss[counter] = ones.data[i*ones.col+j];
+                counter++;
+                
+            }
+            for (int j = 0; j < aaz.col; j++)
+            {
+                ss[counter] = aaz.data[i*aaz.col+j];
+                counter++;
+            }
+        }
         
+        // s = [paz ones aaz]
+        s = assignMat(az.row, 2*l+1, ss);
     }
+    
     
     
     return s;

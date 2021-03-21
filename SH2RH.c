@@ -18,15 +18,81 @@
 
 int main()
 {
+    int lmax = 8;
     float els[5] = {1, 2, 3, 4, 5};
-    float azs[5] = {1, 2, 3, 4, 5};
+    float azs[5] = {0};
     matrix az = assignMat(sizeof(azs)/sizeof(azs[0]), 1, azs);
-    matrix test = eval_SH(3, els, sizeof(els)/sizeof(els[0]), az);
     
-    printMat(test);
+    
+    float *dyntest = malloc(sizeof(float));
+    dyntest[0] = 0;
+//    float* test = SH2RH(dyntest, 1);
+    
+    
+    gen_delta(dyntest, 1, az, 8);
+    
 
+    printf("----\n");
+    matrix test = eval_SH(2, dyntest, 1, az);
+    printMat(test);
+    
+    
     return 0;
 }
+
+/*
+ 
+ Calculate the rotational harmonic decomposition up to harmonic order "lmax"
+ 
+ */
+
+float* SH2RH(float* SH, size_t size_sh)
+{
+    
+    int lmax = 8;
+    
+    float *one = malloc(sizeof(float));
+    one[0] = 0;
+    float azs[1] = {0};
+    matrix az = assignMat(sizeof(azs)/sizeof(azs[0]), 1, azs);
+    
+    matrix* D_SH = gen_delta(one, 0, az, lmax);
+    
+    for (int i = 0; i < 5; i++)
+    {
+        printf("i: %d\n", i);
+        printMat(D_SH[i]);
+    }
+    
+    // allocate memory
+    float* RH = malloc(5*sizeof(float));
+    
+    return RH;
+}
+
+/*
+ 
+ generate the SH coefficients for a delta function pointing along [el az] up to 'lmax'
+ 
+ */
+
+matrix* gen_delta(float el[], size_t size_e, matrix az, int lmax)
+{
+    // allocate memory
+    matrix *SH = malloc(lmax/2+1*sizeof(float));
+    
+    int counter = 0;
+    for (int i = 0; i < lmax+1; i=i+2)
+    {
+        matrix temp = eval_SH(i, el, size_e, az);
+        printf("i: %d\n", i);
+        printMat(temp);
+        SH[counter] = temp;
+        counter ++;
+    }
+    return SH;
+}
+
 
 
 /*
@@ -109,8 +175,12 @@ matrix eval_SH(int l, float el[], size_t size_e, matrix az)
     }
     
     
+    // evaluate legendre polynomials
+    matrix ev = eval_ALP(l, el, size_e);
+    // spherical harmonics
+    matrix SH = eleMultiplyMat(ev, transposeMat(s));
     
-    return s;
+    return SH;
 }
 
 

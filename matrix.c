@@ -211,6 +211,28 @@ matrix cosMat(matrix mat1)
     return mat2;
 }
 
+/* element-wise matrix multiplication */
+matrix eleMultiplyMat(matrix mat1, matrix mat2)
+{
+    // check to see if matrixes are same size
+    if (mat1.row != mat2.row && mat1.col != mat2.col)
+    {
+        printf("INCOMPATIBLE MATRICE DIMENSIONS (element-wise)");
+    }
+    
+    // allocate memory
+    float *s = malloc(mat1.row*mat1.col*sizeof(float));
+    
+    for (int i = 0; i < mat1.row*mat1.col; i++)
+    {
+        s[i] = mat1.data[i] * mat2.data[i];
+    }
+    
+    matrix emat = assignMat(mat1.row, mat1.col, s);
+    
+    return emat;
+}
+
 /*
     
     HELPER

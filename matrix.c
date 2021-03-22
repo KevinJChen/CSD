@@ -214,7 +214,7 @@ matrix cosMat(matrix mat1)
 /* element-wise matrix multiplication */
 matrix eleMultiplyMat(matrix mat1, matrix mat2)
 {
-    // check to see if matrixes are same size
+    // check to see if matrices are same size
     if (mat1.row != mat2.row && mat1.col != mat2.col)
     {
         printf("INCOMPATIBLE MATRICE DIMENSIONS (element-wise)");
@@ -231,6 +231,30 @@ matrix eleMultiplyMat(matrix mat1, matrix mat2)
     matrix emat = assignMat(mat1.row, mat1.col, s);
     
     return emat;
+}
+
+/* right array matrix division (A / B) */
+matrix rightDivideMat(matrix mat1, matrix mat2)
+{
+    
+    // check to see if matrices are same size
+    if (mat1.row != mat2.row && mat1.col != mat2.col)
+    {
+        printf("INCOMPATIBLE MATRICE DIMENSIONS (right array)");
+    }
+    
+    // allocate memory
+    float *s = malloc(mat1.row*mat1.col*sizeof(float));
+    
+    for (int i = 0; i < mat1.row*mat1.col; i++)
+    {
+        s[i] = mat1.data[i] / mat2.data[i];
+    }
+    
+    matrix rmat = assignMat(mat1.row, mat1.col, s);
+    
+    return rmat;
+    
 }
 
 /*

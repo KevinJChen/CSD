@@ -19,22 +19,21 @@
 int main()
 {
     int lmax = 8;
-    float els[5] = {1, 2, 3, 4, 5};
-    float azs[5] = {0};
+    
+    float els[1] = {0};
+    int size_e = 1;
+    
+    float azs[1] = {0};
     matrix az = assignMat(sizeof(azs)/sizeof(azs[0]), 1, azs);
-    
-    
-    float *dyntest = malloc(sizeof(float));
-    dyntest[0] = 0;
-//    float* test = SH2RH(dyntest, 1);
-    
-    
-    gen_delta(dyntest, 1, az, 8);
-    
 
-    printf("----\n");
-    matrix test = eval_SH(2, dyntest, 1, az);
-    printMat(test);
+    
+    
+    matrix* deltatest = gen_delta(els, size_e, az, 8);
+    matrix test = eval_SH(2, els, size_e, az);
+    
+    
+    float* SH = malloc(sizeof(float));
+    float* RHtest = SH2RH(SH, 1);
     
     
     return 0;
@@ -51,21 +50,54 @@ float* SH2RH(float* SH, size_t size_sh)
     
     int lmax = 8;
     
-    float *one = malloc(sizeof(float));
-    one[0] = 0;
+    // el = [0]
+    float *el = malloc(sizeof(float));
+    el[0] = 0;
+    
+    // az = [0]
     float azs[1] = {0};
     matrix az = assignMat(sizeof(azs)/sizeof(azs[0]), 1, azs);
     
-    matrix* D_SH = gen_delta(one, 0, az, lmax);
+    matrix* D_SH = gen_delta(el, 1, az, lmax);
     
-    for (int i = 0; i < 5; i++)
+    int nonzero = 0;
+    // count number of nonzero elements in D_SH
+    for (int i = 0; i < lmax/2+1; i++)
     {
-        printf("i: %d\n", i);
-        printMat(D_SH[i]);
+        for (int j = 0; j < D_SH[i].row*D_SH[i].col; j++)
+        {
+            if (D_SH[i].data[j] != 0)
+            {
+                nonzero++;
+            }
+        }
     }
     
+    
     // allocate memory
-    float* RH = malloc(5*sizeof(float));
+    float* zD_SH = malloc(nonzero*sizeof(float));
+    float* zSH = malloc(nonzero*sizeof(float));
+    float* RH = malloc(nonzero*sizeof(float));
+    
+    // find nonzero elements in D_SH
+    int counter = 0;
+    for (int i = 0; i < lmax/2+1; i++)
+    {
+        for (int j = 0; j < D_SH[i].row*D_SH[i].col; j++)
+        {
+            if (D_SH[i].data[j] != 0)
+            {
+                zD_SH[counter] = D_SH[i].data[j];
+                zSH[counter] = SH[j];
+                counter++;
+            }
+        }
+    }
+    
+    matrix mD_SH = assignMat(nonzero, 1, zD_SH);
+    matrix mSH = assignMat(nonzero, 1, zSH);
+    
+    
     
     return RH;
 }
@@ -85,8 +117,6 @@ matrix* gen_delta(float el[], size_t size_e, matrix az, int lmax)
     for (int i = 0; i < lmax+1; i=i+2)
     {
         matrix temp = eval_SH(i, el, size_e, az);
-        printf("i: %d\n", i);
-        printMat(temp);
         SH[counter] = temp;
         counter ++;
     }
@@ -173,7 +203,6 @@ matrix eval_SH(int l, float el[], size_t size_e, matrix az)
         // s = [paz ones aaz]
         s = assignMat(az.row, 2*l+1, ss);
     }
-    
     
     // evaluate legendre polynomials
     matrix ev = eval_ALP(l, el, size_e);

@@ -16,29 +16,6 @@
 
 #include "SH2RH.h"
 
-int main()
-{
-    int lmax = 8;
-    
-    float els[1] = {0};
-    int size_e = 1;
-    
-    float azs[1] = {0};
-    matrix az = assignMat(sizeof(azs)/sizeof(azs[0]), 1, azs);
-
-    
-    
-    matrix* deltatest = gen_delta(els, size_e, az, 8);
-    matrix test = eval_SH(2, els, size_e, az);
-    
-    
-    float* SH = malloc(sizeof(float));
-    float* RHtest = SH2RH(SH, 1);
-    
-    
-    return 0;
-}
-
 /*
  
  Calculate the rotational harmonic decomposition up to harmonic order "lmax"
@@ -58,21 +35,17 @@ float* SH2RH(float* SH, size_t size_sh)
     float azs[1] = {0};
     matrix az = assignMat(sizeof(azs)/sizeof(azs[0]), 1, azs);
     
-    matrix* D_SH = gen_delta(el, 1, az, lmax);
+    float* D_SH = gen_delta(el, 1, az, lmax);
     
     int nonzero = 0;
     // count number of nonzero elements in D_SH
-    for (int i = 0; i < lmax/2+1; i++)
+    for (int i = 1; i < D_SH[0]+1; i++)
     {
-        for (int j = 0; j < D_SH[i].row*D_SH[i].col; j++)
+        if (D_SH[i] != 0)
         {
-            if (D_SH[i].data[j] != 0)
-            {
-                nonzero++;
-            }
+            nonzero++;
         }
     }
-    
     
     // allocate memory
     float* zD_SH = malloc(nonzero*sizeof(float));
@@ -81,23 +54,21 @@ float* SH2RH(float* SH, size_t size_sh)
     
     // find nonzero elements in D_SH
     int counter = 0;
-    for (int i = 0; i < lmax/2+1; i++)
+    for (int i = 1; i < D_SH[0]+1; i++)
     {
-        for (int j = 0; j < D_SH[i].row*D_SH[i].col; j++)
+        if (D_SH[i] != 0)
         {
-            if (D_SH[i].data[j] != 0)
-            {
-                zD_SH[counter] = D_SH[i].data[j];
-                zSH[counter] = SH[j];
-                counter++;
-            }
+            zD_SH[counter] = D_SH[i];
+            zSH[counter] = SH[i-1];
+            counter++;
         }
     }
     
-    matrix mD_SH = assignMat(nonzero, 1, zD_SH);
-    matrix mSH = assignMat(nonzero, 1, zSH);
-    
-    
+    // right array division
+    for (int i = 0; i < nonzero; i++)
+    {
+        RH[i] = zSH[i] / zD_SH[i];
+    }
     
     return RH;
 }
@@ -108,8 +79,9 @@ float* SH2RH(float* SH, size_t size_sh)
  
  */
 
-matrix* gen_delta(float el[], size_t size_e, matrix az, int lmax)
+float* gen_delta(float el[], size_t size_e, matrix az, int lmax)
 {
+    int lD_SH = 0;
     // allocate memory
     matrix *SH = malloc(lmax/2+1*sizeof(float));
     
@@ -117,10 +89,27 @@ matrix* gen_delta(float el[], size_t size_e, matrix az, int lmax)
     for (int i = 0; i < lmax+1; i=i+2)
     {
         matrix temp = eval_SH(i, el, size_e, az);
+        lD_SH = lD_SH + temp.row*temp.col;
         SH[counter] = temp;
-        counter ++;
+        counter++;
     }
-    return SH;
+    
+    float* D_SH = malloc(lD_SH*sizeof(float));
+    
+    counter = 1;
+    for (int i = 0; i < lmax/2+1; i++)
+    {
+        for (int j = 0; j < SH[i].row*SH[i].col; j++)
+        {
+            D_SH[counter] = SH[i].data[j];
+            counter++;
+        }
+    }
+    
+    // first element = size of float array
+    D_SH[0] = counter-1;
+    
+    return D_SH;
 }
 
 

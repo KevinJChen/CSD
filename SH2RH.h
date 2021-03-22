@@ -16,7 +16,7 @@
 #include "legendre.h"
 
 float* SH2RH(float* SH, size_t size_sh);
-matrix* gen_delta(float el[], size_t size_e, matrix az, int lmax);
+float* gen_delta(float el[], size_t size_e, matrix az, int lmax);
 matrix eval_SH(int l, float el[], size_t size_e, matrix az);
 matrix eval_ALP(int l, float el[], size_t size);
 

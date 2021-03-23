@@ -20,7 +20,18 @@
 int main()
 {
 
-    printf("Success!");
+    float* R_RH = malloc(5*sizeof(float));
+    for (int i = 0; i < 5; i++)
+    {
+        R_RH[i] = i+1;
+    }
+    printf("Success!\n");
     return 0;
 }
+
+void csdeconv(float* R_RH, float lambda, float tau)
+{
+    
+}
+
 

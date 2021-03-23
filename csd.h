@@ -16,5 +16,7 @@
 #include "legendre.h"
 #include "SH2RH.h"
 
+void csdeconv(float* R_RH, float lambda, float tau);
+
 
 #endif /* CSD_h */

@@ -105,7 +105,7 @@ float detMat(matrix m)
 {
     if (m.row != m.col)
     {
-        printf("ERROR: Can not compute determinant of non-square matrix");
+        // printf("ERROR: Can not compute determinant of non-square matrix");
         return -1;
     }
     else if (m.row == 1)
@@ -156,30 +156,48 @@ matrix scalarMat(float s, matrix mat1)
 }
 
 /* returns inverse matrix */
-matrix inverseMat(matrix mat1) { return scalarMat(1/detMat(mat1), adjugate(mat1)); }
+matrix inverseMat(matrix mat1)
+{
+    printf("mat1.col: %d\n", mat1.col);
+    printf("mat1.row: %d\n", mat1.row);
+    if (mat1.col != mat1.row)
+    {
+        printf("ERROR: Can not compute inverse of non-square matrix");
+    }
+    return scalarMat(1/detMat(mat1), adjugate(mat1));
+    
+}
 
 /* returns Moore-Penrose inverse matrix */
 matrix mpinverseMat(matrix mat1)
 {
     
+    
+    printf("here1\n");
+    printf("mat1.row: %d\n", mat1.row);
+    printf("mat1.col: %d\n", mat1.col);
     // (X^t * X)^-1 * X^t
     matrix m1 = multiplyMat(transposeMat(mat1), mat1);
     
-    if (detMat(m1) == 0)
-    {
-        printf("Moore-Penrose Inverse of Matrix Does Not Exist\n");
-        return m1;
-    }
-    
-    
+    printMat(transposeMat(mat1));
+    printf("here2\n");
+    printf("m1.row: %d\n", m1.row);
+    printf("m1.col: %d\n", m1.col);
+//    if (detMat(m1) == 0)
+//    {
+//        printf("Moore-Penrose Inverse of Matrix Does Not Exist\n");
+//        return m1;
+//    }
+
+    printf("here3\n");
+    // printMat(m1);
     matrix m2 = inverseMat(m1);
-    
+    printf("here4\n");
 
 
     matrix m3 = multiplyMat(m2, transposeMat(mat1));
     
 
-    
     return m3;
 }
 

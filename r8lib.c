@@ -6,6 +6,7 @@
 # include <time.h>
 
 # include "r8lib.h"
+# include "legendre.h"
 
 /******************************************************************************/
 
@@ -277,162 +278,162 @@ void gamma_log_values ( int *n_data, double *x, double *fx )
 }
 /******************************************************************************/
 
-int i4_log_10 ( int i )
-
+//int i4_log_10 ( int i )
+//
+///******************************************************************************/
+///*
+//  Purpose:
+//
+//    I4_LOG_10 returns the integer part of the logarithm base 10 of an I4.
+//
+//  Example:
+//
+//        I  I4_LOG_10
+//    -----  --------
+//        0    0
+//        1    0
+//        2    0
+//        9    0
+//       10    1
+//       11    1
+//       99    1
+//      100    2
+//      101    2
+//      999    2
+//     1000    3
+//     1001    3
+//     9999    3
+//    10000    4
+//
+//  Discussion:
+//
+//    I4_LOG_10 ( I ) + 1 is the number of decimal digits in I.
+//
+//  Licensing:
+//
+//    This code is distributed under the GNU LGPL license.
+//
+//  Modified:
+//
+//    23 October 2007
+//
+//  Author:
+//
+//    John Burkardt
+//
+//  Parameters:
+//
+//    Input, int I, the number whose logarithm base 10 is desired.
+//
+//    Output, int I4_LOG_10, the integer part of the logarithm base 10 of
+//    the absolute value of X.
+//*/
+//{
+//  int i_abs;
+//  int ten_pow;
+//  int value;
+//
+//  if ( i == 0 )
+//  {
+//    value = 0;
+//  }
+//  else
+//  {
+//    value = 0;
+//    ten_pow = 10;
+//
+//    i_abs = abs ( i );
+//
+//    while ( ten_pow <= i_abs )
+//    {
+//      value = value + 1;
+//      ten_pow = ten_pow * 10;
+//    }
+//  }
+//  return value;
+//}
+///******************************************************************************/
+//
+//int i4_max ( int i1, int i2 )
+//
+///******************************************************************************/
+///*
+//  Purpose:
+//
+//    I4_MAX returns the maximum of two I4's.
+//
+//  Licensing:
+//
+//    This code is distributed under the GNU LGPL license.
+//
+//  Modified:
+//
+//    29 August 2006
+//
+//  Author:
+//
+//    John Burkardt
+//
+//  Parameters:
+//
+//    Input, int I1, I2, are two integers to be compared.
+//
+//    Output, int I4_MAX, the larger of I1 and I2.
+//*/
+//{
+//  int value;
+//
+//  if ( i2 < i1 )
+//  {
+//    value = i1;
+//  }
+//  else
+//  {
+//    value = i2;
+//  }
+//  return value;
+//}
 /******************************************************************************/
-/*
-  Purpose:
 
-    I4_LOG_10 returns the integer part of the logarithm base 10 of an I4.
-
-  Example:
-
-        I  I4_LOG_10
-    -----  --------
-        0    0
-        1    0
-        2    0
-        9    0
-       10    1
-       11    1
-       99    1
-      100    2
-      101    2
-      999    2
-     1000    3
-     1001    3
-     9999    3
-    10000    4
-
-  Discussion:
-
-    I4_LOG_10 ( I ) + 1 is the number of decimal digits in I.
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    23 October 2007
-
-  Author:
-
-    John Burkardt
-
-  Parameters:
-
-    Input, int I, the number whose logarithm base 10 is desired.
-
-    Output, int I4_LOG_10, the integer part of the logarithm base 10 of
-    the absolute value of X.
-*/
-{
-  int i_abs;
-  int ten_pow;
-  int value;
-
-  if ( i == 0 )
-  {
-    value = 0;
-  }
-  else
-  {
-    value = 0;
-    ten_pow = 10;
-
-    i_abs = abs ( i );
-
-    while ( ten_pow <= i_abs )
-    {
-      value = value + 1;
-      ten_pow = ten_pow * 10;
-    }
-  }
-  return value;
-}
-/******************************************************************************/
-
-int i4_max ( int i1, int i2 )
-
-/******************************************************************************/
-/*
-  Purpose:
-
-    I4_MAX returns the maximum of two I4's.
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    29 August 2006
-
-  Author:
-
-    John Burkardt
-
-  Parameters:
-
-    Input, int I1, I2, are two integers to be compared.
-
-    Output, int I4_MAX, the larger of I1 and I2.
-*/
-{
-  int value;
-
-  if ( i2 < i1 )
-  {
-    value = i1;
-  }
-  else
-  {
-    value = i2;
-  }
-  return value;
-}
-/******************************************************************************/
-
-int i4_min ( int i1, int i2 )
-
-/******************************************************************************/
-/*
-  Purpose:
-
-    I4_MIN returns the smaller of two I4's.
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    29 August 2006
-
-  Author:
-
-    John Burkardt
-
-  Parameters:
-
-    Input, int I1, I2, two integers to be compared.
-
-    Output, int I4_MIN, the smaller of I1 and I2.
-*/
-{
-  int value;
-
-  if ( i1 < i2 )
-  {
-    value = i1;
-  }
-  else
-  {
-    value = i2;
-  }
-  return value;
-}
+//int i4_min ( int i1, int i2 )
+//
+///******************************************************************************/
+///*
+//  Purpose:
+//
+//    I4_MIN returns the smaller of two I4's.
+//
+//  Licensing:
+//
+//    This code is distributed under the GNU LGPL license.
+//
+//  Modified:
+//
+//    29 August 2006
+//
+//  Author:
+//
+//    John Burkardt
+//
+//  Parameters:
+//
+//    Input, int I1, I2, two integers to be compared.
+//
+//    Output, int I4_MIN, the smaller of I1 and I2.
+//*/
+//{
+//  int value;
+//
+//  if ( i1 < i2 )
+//  {
+//    value = i1;
+//  }
+//  else
+//  {
+//    value = i2;
+//  }
+//  return value;
+//}
 /******************************************************************************/
 
 int i4_modp ( int i, int j )
@@ -3404,43 +3405,43 @@ double r8_e ( )
 }
 /******************************************************************************/
 
-double r8_epsilon ( )
-
-/******************************************************************************/
-/*
-  Purpose:
-
-    R8_EPSILON returns the R8 round off unit.
-
-  Discussion:
-
-    R8_EPSILON is a number R which is a power of 2 with the property that,
-    to the precision of the computer's arithmetic,
-      1 < 1 + R
-    but
-      1 = ( 1 + R / 2 )
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    01 September 2012
-
-  Author:
-
-    John Burkardt
-
-  Parameters:
-
-    Output, double R8_EPSILON, the R8 round-off unit.
-*/
-{
-  const double value = 2.220446049250313E-016;
-
-  return value;
-}
+//double r8_epsilon ( )
+//
+///******************************************************************************/
+///*
+//  Purpose:
+//
+//    R8_EPSILON returns the R8 round off unit.
+//
+//  Discussion:
+//
+//    R8_EPSILON is a number R which is a power of 2 with the property that,
+//    to the precision of the computer's arithmetic,
+//      1 < 1 + R
+//    but
+//      1 = ( 1 + R / 2 )
+//
+//  Licensing:
+//
+//    This code is distributed under the GNU LGPL license.
+//
+//  Modified:
+//
+//    01 September 2012
+//
+//  Author:
+//
+//    John Burkardt
+//
+//  Parameters:
+//
+//    Output, double R8_EPSILON, the R8 round-off unit.
+//*/
+//{
+//  const double value = 2.220446049250313E-016;
+//
+//  return value;
+//}
 /******************************************************************************/
 
 double r8_epsilon_compute ( )
@@ -3562,50 +3563,50 @@ double r8_exp ( double x )
 }
 /******************************************************************************/
 
-double r8_factorial ( int n )
-
-/******************************************************************************/
-/*
-  Purpose:
-
-    R8_FACTORIAL computes the factorial of N.
-
-  Discussion:
-
-    factorial ( N ) = product ( 1 <= I <= N ) I
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    26 June 2008
-
-  Author:
-
-    John Burkardt
-
-  Parameters:
-
-    Input, int N, the argument of the factorial function.
-    If N is less than 1, the function value is returned as 1.
-
-    Output, double R8_FACTORIAL, the factorial of N.
-*/
-{
-  int i;
-  double value;
-
-  value = 1.0;
-
-  for ( i = 1; i <= n; i++ )
-  {
-    value = value * ( double ) ( i );
-  }
-
-  return value;
-}
+//double r8_factorial ( int n )
+//
+///******************************************************************************/
+///*
+//  Purpose:
+//
+//    R8_FACTORIAL computes the factorial of N.
+//
+//  Discussion:
+//
+//    factorial ( N ) = product ( 1 <= I <= N ) I
+//
+//  Licensing:
+//
+//    This code is distributed under the GNU LGPL license.
+//
+//  Modified:
+//
+//    26 June 2008
+//
+//  Author:
+//
+//    John Burkardt
+//
+//  Parameters:
+//
+//    Input, int N, the argument of the factorial function.
+//    If N is less than 1, the function value is returned as 1.
+//
+//    Output, double R8_FACTORIAL, the factorial of N.
+//*/
+//{
+//  int i;
+//  double value;
+//
+//  value = 1.0;
+//
+//  for ( i = 1; i <= n; i++ )
+//  {
+//    value = value * ( double ) ( i );
+//  }
+//
+//  return value;
+//}
 /******************************************************************************/
 
 double r8_factorial_stirling ( int n )
@@ -7394,45 +7395,45 @@ double r8_sigmoid ( double l, double b, double m, double x )
 }
 /******************************************************************************/
 
-double r8_sign ( double x )
-
-/******************************************************************************/
-/*
-  Purpose:
-
-    R8_SIGN returns the sign of an R8.
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    08 May 2006
-
-  Author:
-
-    John Burkardt
-
-  Parameters:
-
-    Input, double X, the number whose sign is desired.
-
-    Output, double R8_SIGN, the sign of X.
-*/
-{
-  double value;
-
-  if ( x < 0.0 )
-  {
-    value = - 1.0;
-  }
-  else
-  {
-    value = + 1.0;
-  }
-  return value;
-}
+//double r8_sign ( double x )
+//
+///******************************************************************************/
+///*
+//  Purpose:
+//
+//    R8_SIGN returns the sign of an R8.
+//
+//  Licensing:
+//
+//    This code is distributed under the GNU LGPL license.
+//
+//  Modified:
+//
+//    08 May 2006
+//
+//  Author:
+//
+//    John Burkardt
+//
+//  Parameters:
+//
+//    Input, double X, the number whose sign is desired.
+//
+//    Output, double R8_SIGN, the sign of X.
+//*/
+//{
+//  double value;
+//
+//  if ( x < 0.0 )
+//  {
+//    value = - 1.0;
+//  }
+//  else
+//  {
+//    value = + 1.0;
+//  }
+//  return value;
+//}
 /******************************************************************************/
 
 double r8_sign3 ( double x )
@@ -19491,176 +19492,176 @@ void r8mat_power_method ( int n, double a[], double *r, double v[] )
 }
 /******************************************************************************/
 
-void r8mat_print ( int m, int n, double a[], char *title )
-
+//void r8mat_print ( int m, int n, double a[], char *title )
+//
+///******************************************************************************/
+///*
+//  Purpose:
+//
+//    R8MAT_PRINT prints an R8MAT.
+//
+//  Discussion:
+//
+//    An R8MAT is a doubly dimensioned array of R8 values, stored as a vector
+//    in column-major order.
+//
+//    Entry A(I,J) is stored as A[I+J*M]
+//
+//  Licensing:
+//
+//    This code is distributed under the GNU LGPL license.
+//
+//  Modified:
+//
+//    28 May 2008
+//
+//  Author:
+//
+//    John Burkardt
+//
+//  Parameters:
+//
+//    Input, int M, the number of rows in A.
+//
+//    Input, int N, the number of columns in A.
+//
+//    Input, double A[M*N], the M by N matrix.
+//
+//    Input, char *TITLE, a title.
+//*/
+//{
+//  r8mat_print_some ( m, n, a, 1, 1, m, n, title );
+//
+//  return;
+//}
 /******************************************************************************/
-/*
-  Purpose:
 
-    R8MAT_PRINT prints an R8MAT.
-
-  Discussion:
-
-    An R8MAT is a doubly dimensioned array of R8 values, stored as a vector
-    in column-major order.
-
-    Entry A(I,J) is stored as A[I+J*M]
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    28 May 2008
-
-  Author:
-
-    John Burkardt
-
-  Parameters:
-
-    Input, int M, the number of rows in A.
-
-    Input, int N, the number of columns in A.
-
-    Input, double A[M*N], the M by N matrix.
-
-    Input, char *TITLE, a title.
-*/
-{
-  r8mat_print_some ( m, n, a, 1, 1, m, n, title );
-
-  return;
-}
-/******************************************************************************/
-
-void r8mat_print_some ( int m, int n, double a[], int ilo, int jlo, int ihi,
-  int jhi, char *title )
-
-/******************************************************************************/
-/*
-  Purpose:
-
-    R8MAT_PRINT_SOME prints some of an R8MAT.
-
-  Discussion:
-
-    An R8MAT is a doubly dimensioned array of R8 values, stored as a vector
-    in column-major order.
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    26 June 2013
-
-  Author:
-
-    John Burkardt
-
-  Parameters:
-
-    Input, int M, the number of rows of the matrix.
-    M must be positive.
-
-    Input, int N, the number of columns of the matrix.
-    N must be positive.
-
-    Input, double A[M*N], the matrix.
-
-    Input, int ILO, JLO, IHI, JHI, designate the first row and
-    column, and the last row and column to be printed.
-
-    Input, char *TITLE, a title.
-*/
-{
-# define INCX 5
-
-  int i;
-  int i2hi;
-  int i2lo;
-  int j;
-  int j2hi;
-  int j2lo;
-
-  fprintf ( stdout, "\n" );
-  fprintf ( stdout, "%s\n", title );
-
-  if ( m <= 0 || n <= 0 )
-  {
-    fprintf ( stdout, "\n" );
-    fprintf ( stdout, "  (None)\n" );
-    return;
-  }
-/*
-  Print the columns of the matrix, in strips of 5.
-*/
-  for ( j2lo = jlo; j2lo <= jhi; j2lo = j2lo + INCX )
-  {
-    j2hi = j2lo + INCX - 1;
-    if ( n < j2hi )
-    {
-      j2hi = n;
-    }
-    if ( jhi < j2hi )
-    {
-      j2hi = jhi;
-    }
-
-    fprintf ( stdout, "\n" );
-/*
-  For each column J in the current range...
-
-  Write the header.
-*/
-    fprintf ( stdout, "  Col:  ");
-    for ( j = j2lo; j <= j2hi; j++ )
-    {
-      fprintf ( stdout, "  %7d     ", j - 1 );
-    }
-    fprintf ( stdout, "\n" );
-    fprintf ( stdout, "  Row\n" );
-    fprintf ( stdout, "\n" );
-/*
-  Determine the range of the rows in this strip.
-*/
-    if ( 1 < ilo )
-    {
-      i2lo = ilo;
-    }
-    else
-    {
-      i2lo = 1;
-    }
-    if ( m < ihi )
-    {
-      i2hi = m;
-    }
-    else
-    {
-      i2hi = ihi;
-    }
-
-    for ( i = i2lo; i <= i2hi; i++ )
-    {
-/*
-  Print out (up to) 5 entries in row I, that lie in the current strip.
-*/
-      fprintf ( stdout, "%5d:", i - 1 );
-      for ( j = j2lo; j <= j2hi; j++ )
-      {
-        fprintf ( stdout, "  %14g", a[i-1+(j-1)*m] );
-      }
-      fprintf ( stdout, "\n" );
-    }
-  }
-
-  return;
-# undef INCX
-}
+//void r8mat_print_some ( int m, int n, double a[], int ilo, int jlo, int ihi,
+//  int jhi, char *title )
+//
+///******************************************************************************/
+///*
+//  Purpose:
+//
+//    R8MAT_PRINT_SOME prints some of an R8MAT.
+//
+//  Discussion:
+//
+//    An R8MAT is a doubly dimensioned array of R8 values, stored as a vector
+//    in column-major order.
+//
+//  Licensing:
+//
+//    This code is distributed under the GNU LGPL license.
+//
+//  Modified:
+//
+//    26 June 2013
+//
+//  Author:
+//
+//    John Burkardt
+//
+//  Parameters:
+//
+//    Input, int M, the number of rows of the matrix.
+//    M must be positive.
+//
+//    Input, int N, the number of columns of the matrix.
+//    N must be positive.
+//
+//    Input, double A[M*N], the matrix.
+//
+//    Input, int ILO, JLO, IHI, JHI, designate the first row and
+//    column, and the last row and column to be printed.
+//
+//    Input, char *TITLE, a title.
+//*/
+//{
+//# define INCX 5
+//
+//  int i;
+//  int i2hi;
+//  int i2lo;
+//  int j;
+//  int j2hi;
+//  int j2lo;
+//
+//  fprintf ( stdout, "\n" );
+//  fprintf ( stdout, "%s\n", title );
+//
+//  if ( m <= 0 || n <= 0 )
+//  {
+//    fprintf ( stdout, "\n" );
+//    fprintf ( stdout, "  (None)\n" );
+//    return;
+//  }
+///*
+//  Print the columns of the matrix, in strips of 5.
+//*/
+//  for ( j2lo = jlo; j2lo <= jhi; j2lo = j2lo + INCX )
+//  {
+//    j2hi = j2lo + INCX - 1;
+//    if ( n < j2hi )
+//    {
+//      j2hi = n;
+//    }
+//    if ( jhi < j2hi )
+//    {
+//      j2hi = jhi;
+//    }
+//
+//    fprintf ( stdout, "\n" );
+///*
+//  For each column J in the current range...
+//
+//  Write the header.
+//*/
+//    fprintf ( stdout, "  Col:  ");
+//    for ( j = j2lo; j <= j2hi; j++ )
+//    {
+//      fprintf ( stdout, "  %7d     ", j - 1 );
+//    }
+//    fprintf ( stdout, "\n" );
+//    fprintf ( stdout, "  Row\n" );
+//    fprintf ( stdout, "\n" );
+///*
+//  Determine the range of the rows in this strip.
+//*/
+//    if ( 1 < ilo )
+//    {
+//      i2lo = ilo;
+//    }
+//    else
+//    {
+//      i2lo = 1;
+//    }
+//    if ( m < ihi )
+//    {
+//      i2hi = m;
+//    }
+//    else
+//    {
+//      i2hi = ihi;
+//    }
+//
+//    for ( i = i2lo; i <= i2hi; i++ )
+//    {
+///*
+//  Print out (up to) 5 entries in row I, that lie in the current strip.
+//*/
+//      fprintf ( stdout, "%5d:", i - 1 );
+//      for ( j = j2lo; j <= j2hi; j++ )
+//      {
+//        fprintf ( stdout, "  %14g", a[i-1+(j-1)*m] );
+//      }
+//      fprintf ( stdout, "\n" );
+//    }
+//  }
+//
+//  return;
+//# undef INCX
+//}
 /******************************************************************************/
 
 double r8mat_product_elementwise ( int m, int n, double a[], double b[] )
@@ -28558,45 +28559,45 @@ void r8vec_divide ( int n, double a[], double s )
 }
 /******************************************************************************/
 
-double r8vec_dot_product ( int n, double a1[], double a2[] )
-
-/******************************************************************************/
-/*
-  Purpose:
-
-    R8VEC_DOT_PRODUCT computes the dot product of a pair of R8VEC's.
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    26 July 2007
-
-  Author:
-
-    John Burkardt
-
-  Parameters:
-
-    Input, int N, the number of entries in the vectors.
-
-    Input, double A1[N], A2[N], the two vectors to be considered.
-
-    Output, double R8VEC_DOT_PRODUCT, the dot product of the vectors.
-*/
-{
-  int i;
-  double value;
-
-  value = 0.0;
-  for ( i = 0; i < n; i++ )
-  {
-    value = value + a1[i] * a2[i];
-  }
-  return value;
-}
+//double r8vec_dot_product ( int n, double a1[], double a2[] )
+//
+///******************************************************************************/
+///*
+//  Purpose:
+//
+//    R8VEC_DOT_PRODUCT computes the dot product of a pair of R8VEC's.
+//
+//  Licensing:
+//
+//    This code is distributed under the GNU LGPL license.
+//
+//  Modified:
+//
+//    26 July 2007
+//
+//  Author:
+//
+//    John Burkardt
+//
+//  Parameters:
+//
+//    Input, int N, the number of entries in the vectors.
+//
+//    Input, double A1[N], A2[N], the two vectors to be considered.
+//
+//    Output, double R8VEC_DOT_PRODUCT, the dot product of the vectors.
+//*/
+//{
+//  int i;
+//  double value;
+//
+//  value = 0.0;
+//  for ( i = 0; i < n; i++ )
+//  {
+//    value = value + a1[i] * a2[i];
+//  }
+//  return value;
+//}
 /******************************************************************************/
 
 double r8vec_dot_product_affine ( int n, double v0[], double v1[], double v2[] )
@@ -32696,64 +32697,64 @@ void r8vec_linspace ( int n, double a, double b, double x[] )
 }
 /******************************************************************************/
 
-double *r8vec_linspace_new ( int n, double a, double b )
-
-/******************************************************************************/
-/*
-  Purpose:
-
-    R8VEC_LINSPACE_NEW creates a vector of linearly spaced values.
-
-  Discussion:
-
-    An R8VEC is a vector of R8's.
-
-    4 points evenly spaced between 0 and 12 will yield 0, 4, 8, 12.
- 
-    In other words, the interval is divided into N-1 even subintervals,
-    and the endpoints of intervals are used as the points.
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    29 March 2011
-
-  Author:
-
-    John Burkardt
-
-  Parameters:
-
-    Input, int N, the number of entries in the vector.
-
-    Input, double A, B, the first and last entries.
-
-    Output, double R8VEC_LINSPACE_NEW[N], a vector of linearly spaced data.
-*/
-{
-  int i;
-  double *x;
-
-  x = ( double * ) malloc ( n * sizeof ( double ) );
-
-  if ( n == 1 )
-  {
-    x[0] = ( a + b ) / 2.0;
-  }
-  else
-  {
-    for ( i = 0; i < n; i++ )
-    {
-      x[i] = ( ( double ) ( n - 1 - i ) * a
-             + ( double ) (         i ) * b )
-             / ( double ) ( n - 1     );
-    }
-  }
-  return x;
-}
+//double *r8vec_linspace_new ( int n, double a, double b )
+//
+///******************************************************************************/
+///*
+//  Purpose:
+//
+//    R8VEC_LINSPACE_NEW creates a vector of linearly spaced values.
+//
+//  Discussion:
+//
+//    An R8VEC is a vector of R8's.
+//
+//    4 points evenly spaced between 0 and 12 will yield 0, 4, 8, 12.
+// 
+//    In other words, the interval is divided into N-1 even subintervals,
+//    and the endpoints of intervals are used as the points.
+//
+//  Licensing:
+//
+//    This code is distributed under the GNU LGPL license.
+//
+//  Modified:
+//
+//    29 March 2011
+//
+//  Author:
+//
+//    John Burkardt
+//
+//  Parameters:
+//
+//    Input, int N, the number of entries in the vector.
+//
+//    Input, double A, B, the first and last entries.
+//
+//    Output, double R8VEC_LINSPACE_NEW[N], a vector of linearly spaced data.
+//*/
+//{
+//  int i;
+//  double *x;
+//
+//  x = ( double * ) malloc ( n * sizeof ( double ) );
+//
+//  if ( n == 1 )
+//  {
+//    x[0] = ( a + b ) / 2.0;
+//  }
+//  else
+//  {
+//    for ( i = 0; i < n; i++ )
+//    {
+//      x[i] = ( ( double ) ( n - 1 - i ) * a
+//             + ( double ) (         i ) * b )
+//             / ( double ) ( n - 1     );
+//    }
+//  }
+//  return x;
+//}
 /******************************************************************************/
 
 double *r8vec_linspace2_new ( int n, double a, double b )
@@ -35956,51 +35957,51 @@ void r8vec_polarize ( int n, double a[], double p[], double a_normal[],
 }
 /******************************************************************************/
 
-void r8vec_print ( int n, double a[], char *title )
-
-/******************************************************************************/
-/*
-  Purpose:
-
-    R8VEC_PRINT prints an R8VEC.
-
-  Discussion:
-
-    An R8VEC is a vector of R8's.
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    08 April 2009
-
-  Author:
-
-    John Burkardt
-
-  Parameters:
-
-    Input, int N, the number of components of the vector.
-
-    Input, double A[N], the vector to be printed.
-
-    Input, char *TITLE, a title.
-*/
-{
-  int i;
-
-  fprintf ( stdout, "\n" );
-  fprintf ( stdout, "%s\n", title );
-  fprintf ( stdout, "\n" );
-  for ( i = 0; i < n; i++ )
-  {
-    fprintf ( stdout, "  %8d: %14g\n", i, a[i] );
-  }
-
-  return;
-}
+//void r8vec_print ( int n, double a[], char *title )
+//
+///******************************************************************************/
+///*
+//  Purpose:
+//
+//    R8VEC_PRINT prints an R8VEC.
+//
+//  Discussion:
+//
+//    An R8VEC is a vector of R8's.
+//
+//  Licensing:
+//
+//    This code is distributed under the GNU LGPL license.
+//
+//  Modified:
+//
+//    08 April 2009
+//
+//  Author:
+//
+//    John Burkardt
+//
+//  Parameters:
+//
+//    Input, int N, the number of components of the vector.
+//
+//    Input, double A[N], the vector to be printed.
+//
+//    Input, char *TITLE, a title.
+//*/
+//{
+//  int i;
+//
+//  fprintf ( stdout, "\n" );
+//  fprintf ( stdout, "%s\n", title );
+//  fprintf ( stdout, "\n" );
+//  for ( i = 0; i < n; i++ )
+//  {
+//    fprintf ( stdout, "  %8d: %14g\n", i, a[i] );
+//  }
+//
+//  return;
+//}
 /******************************************************************************/
 
 void r8vec_print_16 ( int n, double a[], char *title )
@@ -41726,52 +41727,52 @@ int r8vec2_compare ( int n, double a1[], double a2[], int i, int j )
 }
 /******************************************************************************/
 
-void r8vec2_print ( int n, double a1[], double a2[], char *title )
-
-/******************************************************************************/
-/*
-  Purpose:
-
-    R8VEC2_PRINT prints an R8VEC2.
-
-  Discussion:
-
-    An R8VEC2 is a dataset consisting of N pairs of real values, stored
-    as two separate vectors A1 and A2.
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    26 March 2009
-
-  Author:
-
-    John Burkardt
-
-  Parameters:
-
-    Input, int N, the number of components of the vector.
-
-    Input, double A1[N], double A2[N], the vectors to be printed.
-
-    Input, char *TITLE, a title.
-*/
-{
-  int i;
-
-  fprintf ( stdout, "\n" );
-  fprintf ( stdout, "%s\n", title );
-  fprintf ( stdout, "\n" );
-  for ( i = 0; i < n; i++ )
-  {
-    fprintf ( stdout, "  %4d: %14g  %14g\n", i, a1[i], a2[i] );
-  }
-
-  return;
-}
+//void r8vec2_print ( int n, double a1[], double a2[], char *title )
+//
+///******************************************************************************/
+///*
+//  Purpose:
+//
+//    R8VEC2_PRINT prints an R8VEC2.
+//
+//  Discussion:
+//
+//    An R8VEC2 is a dataset consisting of N pairs of real values, stored
+//    as two separate vectors A1 and A2.
+//
+//  Licensing:
+//
+//    This code is distributed under the GNU LGPL license.
+//
+//  Modified:
+//
+//    26 March 2009
+//
+//  Author:
+//
+//    John Burkardt
+//
+//  Parameters:
+//
+//    Input, int N, the number of components of the vector.
+//
+//    Input, double A1[N], double A2[N], the vectors to be printed.
+//
+//    Input, char *TITLE, a title.
+//*/
+//{
+//  int i;
+//
+//  fprintf ( stdout, "\n" );
+//  fprintf ( stdout, "%s\n", title );
+//  fprintf ( stdout, "\n" );
+//  for ( i = 0; i < n; i++ )
+//  {
+//    fprintf ( stdout, "  %4d: %14g  %14g\n", i, a1[i], a2[i] );
+//  }
+//
+//  return;
+//}
 /******************************************************************************/
 
 void r8vec2_print_some ( int n, double x1[], double x2[], int max_print,
@@ -42667,48 +42668,48 @@ void sort_heap_external ( int n, int *indx, int *i, int *j, int isgn )
 }
 /******************************************************************************/
 
-void timestamp ( )
-
-/******************************************************************************/
-/*
-  Purpose:
-
-    TIMESTAMP prints the current YMDHMS date as a time stamp.
-
-  Example:
-
-    31 May 2001 09:45:54 AM
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    24 September 2003
-
-  Author:
-
-    John Burkardt
-
-  Parameters:
-
-    None
-*/
-{
-# define TIME_SIZE 40
-
-  static char time_buffer[TIME_SIZE];
-  const struct tm *tm;
-  time_t now;
-
-  now = time ( NULL );
-  tm = localtime ( &now );
-
-  strftime ( time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", tm );
-
-  fprintf ( stdout, "%s\n", time_buffer );
-
-  return;
-# undef TIME_SIZE
-}
+//void timestamp ( )
+//
+///******************************************************************************/
+///*
+//  Purpose:
+//
+//    TIMESTAMP prints the current YMDHMS date as a time stamp.
+//
+//  Example:
+//
+//    31 May 2001 09:45:54 AM
+//
+//  Licensing:
+//
+//    This code is distributed under the GNU LGPL license.
+//
+//  Modified:
+//
+//    24 September 2003
+//
+//  Author:
+//
+//    John Burkardt
+//
+//  Parameters:
+//
+//    None
+//*/
+//{
+//# define TIME_SIZE 40
+//
+//  static char time_buffer[TIME_SIZE];
+//  const struct tm *tm;
+//  time_t now;
+//
+//  now = time ( NULL );
+//  tm = localtime ( &now );
+//
+//  strftime ( time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", tm );
+//
+//  fprintf ( stdout, "%s\n", time_buffer );
+//
+//  return;
+//# undef TIME_SIZE
+//}

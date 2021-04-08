@@ -13,6 +13,7 @@
 #include <time.h>
 
 #include "legendre.h"
+#include "r8lib.h"
 
 matrix legendre(int order, double el[], int num_el)
 {

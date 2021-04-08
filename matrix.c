@@ -171,29 +171,17 @@ matrix inverseMat(matrix mat1)
 /* returns Moore-Penrose inverse matrix */
 matrix mpinverseMat(matrix mat1)
 {
-    
-    
-    printf("here1\n");
-    printf("mat1.row: %d\n", mat1.row);
-    printf("mat1.col: %d\n", mat1.col);
+
     // (X^t * X)^-1 * X^t
     matrix m1 = multiplyMat(transposeMat(mat1), mat1);
-    
-    printMat(transposeMat(mat1));
-    printf("here2\n");
-    printf("m1.row: %d\n", m1.row);
-    printf("m1.col: %d\n", m1.col);
-//    if (detMat(m1) == 0)
-//    {
-//        printf("Moore-Penrose Inverse of Matrix Does Not Exist\n");
-//        return m1;
-//    }
 
-    printf("here3\n");
-    // printMat(m1);
+    if (detMat(m1) == 0)
+    {
+        printf("Moore-Penrose Inverse of Matrix Does Not Exist\n");
+        return m1;
+    }
+
     matrix m2 = inverseMat(m1);
-    printf("here4\n");
-
 
     matrix m3 = multiplyMat(m2, transposeMat(mat1));
     

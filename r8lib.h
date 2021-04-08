@@ -1,11 +1,13 @@
+# include <stdbool.h>
+
 #ifndef R8LIB_h
 #define R8LIB_h
 
 void gamma_values ( int *n_data, double *x, double *fx );
 void gamma_log_values ( int *n_data, double *x, double *fx );
-int i4_log_10 ( int i );
-int i4_max ( int i1, int i2 );
-int i4_min ( int i1, int i2 );
+// int i4_log_10 ( int i );
+// int i4_max ( int i1, int i2 );
+// int i4_min ( int i1, int i2 );
 int i4_modp ( int i, int j );
 int i4_power ( int i, int j );
 int i4_sign ( int i );
@@ -54,10 +56,10 @@ double r8_diff ( double x, double y, int n );
 int r8_digit ( double x, int idigit );
 double r8_divide_i4 ( int i, int j );
 double r8_e ( );
-double r8_epsilon ( );
+// double r8_epsilon ( );
 double r8_epsilon_compute ( );
 double r8_exp ( double x );
-double r8_factorial ( int n );
+//double r8_factorial ( int n );
 double r8_factorial_stirling ( int n );
 void r8_factorial_values ( int *n_data, int *n, double *fn );
 double r8_factorial2 ( int n );
@@ -109,7 +111,7 @@ double r8_roundx ( int nplace, double x );
 double r8_secd ( double degrees );
 double r8_sech ( double x );
 double r8_sigmoid ( double l, double b, double m, double x );
-double r8_sign ( double x );
+// double r8_sign ( double x );
 double r8_sign3 ( double x );
 char r8_sign_char ( double x );
 int r8_sign_match ( double r1, double r2 );
@@ -282,9 +284,9 @@ char r8mat_plot_symbol ( double r );
 double *r8mat_poly_char ( int n, double a[] );
 double *r8mat_power ( int n, double a[], int npow );
 void r8mat_power_method ( int n, double a[], double *r, double v[] );
-void r8mat_print ( int m, int n, double a[], char *title );
-void r8mat_print_some ( int m, int n, double a[], int ilo, int jlo, int ihi,
-  int jhi, char *title );
+// void r8mat_print ( int m, int n, double a[], char *title );
+//void r8mat_print_some ( int m, int n, double a[], int ilo, int jlo, int ihi,
+//  int jhi, char *title );
 double r8mat_product_elementwise ( int m, int n, double a[], double b[] );
 double r8mat_ref ( int m, int n, double a[] );
 double r8mat_rms ( int m, int n, double a[] );
@@ -412,7 +414,7 @@ void r8vec_direct_product2 ( int factor_index, int factor_order,
   double factor_value[], int factor_num, int point_num, double w[] );
 double r8vec_distance ( int dim_num, double v1[], double v2[] );
 void r8vec_divide ( int n, double a[], double s );
-double r8vec_dot_product ( int n, double a1[], double a2[] );
+// double r8vec_dot_product ( int n, double a1[], double a2[] );
 double r8vec_dot_product_affine ( int n, double v0[], double v1[], double v2[] );
 double r8vec_entropy ( int n, double x[] );
 int r8vec_eq ( int n, double a1[], double a2[] );
@@ -481,7 +483,7 @@ bool r8vec_is_positive ( int n, double a[] );
 bool r8vec_is_zero ( int n, double x[] );
 double *r8vec_legendre_new ( int n, double a_first, double a_last );
 void r8vec_linspace ( int n, double a_lo, double a_hi, double x[] );
-double *r8vec_linspace_new ( int n, double a_lo, double a_hi );
+// double *r8vec_linspace_new ( int n, double a_lo, double a_hi );
 double *r8vec_linspace2_new ( int n, double a_lo, double a_hi );
 int r8vec_lt ( int n, double a1[], double a2[] );
 void r8vec_mask_print ( int n, double a[], int mask_num, int mask[],
@@ -531,7 +533,7 @@ void r8vec_permute_cyclic ( int n, int k, double a[] );
 void r8vec_permute_uniform ( int n, double a[], int *seed );
 void r8vec_polarize ( int n, double a[], double p[], double a_normal[],
   double a_parallel[] );
-void r8vec_print ( int n, double a[], char *title );
+// void r8vec_print ( int n, double a[], char *title );
 void r8vec_print_16 ( int n, double a[], char *title );
 void r8vec_print_part ( int n, double a[], int i_lo, int i_hi, char *title );
 void r8vec_print_some ( int n, double a[], int max_print, char *title );
@@ -612,7 +614,7 @@ void r8vec_write ( int n, double r[], char *output_file );
 void r8vec_zeros ( int n, double x[] );
 double *r8vec_zeros_new ( int n );
 int r8vec2_compare ( int n, double a1[], double a2[], int i, int j );
-void r8vec2_print ( int n, double a1[], double a2[], char *title );
+// void r8vec2_print ( int n, double a1[], double a2[], char *title );
 void r8vec2_print_some ( int n, double x1[], double x2[], int max_print,
   char *title );
 void r8vec2_sort_a ( int n, double a1[], double a2[] );
@@ -625,7 +627,7 @@ int r8vec2_sum_max_index ( int n, double a[], double b[] );
 void r8vec3_print ( int n, double a1[], double a2[], double a3[], char *title );
 int s_len_trim ( char *s );
 void sort_heap_external ( int n, int *indx, int *i, int *j, int isgn );
-void timestamp ( );
+// void timestamp ( );
 
 
 #endif /* R8LIB_h */

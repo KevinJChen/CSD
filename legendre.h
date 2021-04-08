@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "matrix.h"
+#include "r8lib.h"
 
 matrix legendre(int order, double el[], int num_el);
 

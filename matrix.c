@@ -263,6 +263,47 @@ matrix rightDivideMat(matrix mat1, matrix mat2)
     
 }
 
+/* return mean of colums */
+matrix meanMat(matrix mat1)
+{
+    
+    float * dmat = malloc(mat1.col*sizeof(float));
+    for (int i = 0; i < mat1.col; i++)
+    {
+        float sum = 0;
+        for (int j = 0; j < mat1.row; j++)
+        {
+            sum += mat1.data[i+j*mat1.col];
+        }
+        dmat[i] = sum/mat1.row;
+    }
+    matrix mat2 = assignMat(1, mat1.col, dmat);
+    return mat2;
+}
+
+/* find where mat2 > mat1 */
+matrix findMat(matrix mat1, matrix mat2)
+{
+    float* dm = malloc(mat1.row*mat1.col*sizeof(float));
+    int counter = 0;
+    
+    for (int i = 0; i < mat1.col; i++)
+    {
+        for (int j = 0; j < mat1.row; j++)
+        {
+            if (mat2.data[j*mat1.col+i] > mat1.data[j*mat1.col+i])
+            {
+                dm[counter] = i*mat1.col+j + 1;
+                counter++;
+            }
+        }
+    }
+    
+    matrix m = assignMat(counter, 1, dm);
+    
+    return m;
+}
+
 /*
     
     HELPER

@@ -36,6 +36,8 @@ matrix sinMat(matrix mat1);
 matrix cosMat(matrix mat1);
 matrix eleMultiplyMat(matrix mat1, matrix mat2);
 matrix rightDivideMat(matrix mat1, matrix mat2);
+matrix meanMat(matrix mat1);
+matrix findMat(matrix mat1, matrix mat2);
 
 /* helper */
 float multProd (int len, float * row, float * col);

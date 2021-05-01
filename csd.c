@@ -31,28 +31,28 @@ int main()
     R_RH[6] = 0.00034;
     R_RH[7] = -0.000045;
     R_RH[8] = 0.0000054;
-    
+
     float *dSH = malloc(2700*sizeof(float));
     for (int i = 0; i < 2700; i++)
     {
         dSH[i] = i;
     }
     matrix SH = assignMat(60, 45, dSH);
-    
+
     float *dS = malloc(60*sizeof(float));
     for (int i = 0; i < 60; i++)
     {
         dS[i] = i;
     }
     matrix S = assignMat(60, 1, dS);
-    
+
     float *dHR_SH = malloc(2700*sizeof(float));
     for (int i = 0; i < 2700; i++)
     {
         dHR_SH[i] = i;
     }
     matrix HR_SH = assignMat(60, 45, dHR_SH);
-    
+
     csdeconv(R_RH, SH, HR_SH, S, 1.0, 0.1);
     
     return 0;
@@ -134,10 +134,86 @@ void csdeconv(float* R_RH, matrix DW_SH, matrix HR_SH, matrix S, float lambda, f
     }
     matrix F_SH = assignMat(HR_SH.col, 1, dataF_SH);
     
-    // set threshold on FOD amplitude used to identify 'negative' values:
-    float threshold = tau;
     
-    printMat(F_SH);
+    // set threshold on FOD amplitude used to identify 'negative' values:
+    matrix threshold = scalarMat(tau, meanMat(multiplyMat(F_SH, HR_SH)));
+    
+    // scale lambda to account for differences in the number of
+    // DW directions and number of mapped directions
+    lambda = lambda * fconv.row * R_RH[0] / HR_SH.col;
+    
+    /*
+     
+     
+        main iteration loop
+     
+     
+     */
+
+    float* ndfconv = malloc(fconv.row*HR_SH.col*sizeof(float));
+    for (int i = 0; i < fconv.row; i++)
+    {
+        for (int j = 0; j < HR_SH.col; j++)
+        {
+            if (j >= fconv.col)
+            {
+                printf("HERERERASDLKF\n");
+                printf("%d\n", fconv.col);
+                // ndfconv[i*HR_SH.col+j] = 0;
+            }
+            else
+            {
+                ndfconv[i*HR_SH.col+j] = fconv.data[i*fconv.col+j];
+            }
+        }
+    }
+    matrix nfconv = assignMat(fconv.row, HR_SH.col, ndfconv);
+    
+    matrix k;
+    for (int i = 0; i < 50; i++)
+    {
+        matrix A = multiplyMat(HR_SH, F_SH);
+        matrix k2 = findMat(A, threshold);
+        if ((k2.row + nfconv.row) < HR_SH.col)
+        {
+            printf("ERROR: Too few negative directions identified - failed to converge\n");
+            return;
+        }
+        
+        if (k2.row == k.row && k2.col == k.col)
+        {
+            printf("ERROR: \n");
+            return;
+        }
+        k = k2;
+        
+        int counter = 0;
+        int counter2 = 0;
+        float* dHRSH = malloc(HR_SH.col*k.row*sizeof(float));
+        for (int i = 0; i < HR_SH.row; i++)
+        {
+            if (k.data[counter] == i + 1)
+            {
+                for (int j = 0; j < HR_SH.col; j++)
+                {
+                    dHRSH[counter2] = HR_SH.data[i*HR_SH.col+j];
+                    counter2++;
+                }
+                counter++;
+            }
+        }
+        
+        matrix second = scalarMat(lambda, assignMat(k.row, HR_SH.col, dHRSH));
+        
+        float* dM = malloc((second.row+fconv.row)*second.col*sizeof(float));
+        
+
+        
+
+    }
+    
+    printf("maximum number of iterations exceeded - FAILED TO CONVERGE\n");
+    
     
     
 }

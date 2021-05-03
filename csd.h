@@ -17,7 +17,7 @@
 #include "SH2RH.h"
 #include "qr_solve.h"
 
-void csdeconv(float* R_RH, matrix DW_SH, matrix HR_SH, matrix S, float lambda, float tau);
+matrix csdeconv(float* R_RH, matrix DW_SH, matrix HR_SH, matrix S, float lambda, float tau);
 int nSH_for_lmax(int lmax);
 
 

@@ -58,7 +58,7 @@ int main()
     return 0;
 }
 
-void csdeconv(float* R_RH, matrix DW_SH, matrix HR_SH, matrix S, float lambda, float tau)
+matrix csdeconv(float* R_RH, matrix DW_SH, matrix HR_SH, matrix S, float lambda, float tau)
 {
     // lambda default is 1
     // tau default is 0.1
@@ -174,16 +174,19 @@ void csdeconv(float* R_RH, matrix DW_SH, matrix HR_SH, matrix S, float lambda, f
     {
         matrix A = multiplyMat(HR_SH, F_SH);
         matrix k2 = findMat(A, threshold);
+        
         if ((k2.row + nfconv.row) < HR_SH.col)
         {
             printf("ERROR: Too few negative directions identified - failed to converge\n");
-            return;
+            matrix error;
+            return error;
         }
         
         if (k2.row == k.row && k2.col == k.col)
         {
             printf("ERROR: \n");
-            return;
+            matrix error;
+            return error;
         }
         k = k2;
         
@@ -202,18 +205,69 @@ void csdeconv(float* R_RH, matrix DW_SH, matrix HR_SH, matrix S, float lambda, f
                 counter++;
             }
         }
-        
         matrix second = scalarMat(lambda, assignMat(k.row, HR_SH.col, dHRSH));
         
         float* dM = malloc((second.row+fconv.row)*second.col*sizeof(float));
+        double* ddM = malloc((second.row+fconv.row)*second.col*sizeof(double));
         
+        
+        int dMcounter = 0;
+        int fcounter = 0;
+        int secondcounter = 0;
+        for (int i = 0; i < second.row+fconv.row; i++)
+        {
+            for (int j = 0; j< second.col; j++)
+            {
+                if (i < fconv.row)
+                {
+                    dM[dMcounter] = fconv.data[fcounter];
+                    ddM[dMcounter] = fconv.data[fcounter];
+                    fcounter++;
+                }
+                else
+                {
+                    dM[dMcounter] = second.data[secondcounter];
+                    ddM[dMcounter] = second.data[secondcounter];
+                    secondcounter++;
+                }
+            }
+        }
+        
+        matrix M = assignMat((second.row+fconv.row), second.col, dM);
+        
+        dF_SH1 = malloc(M.row*M.col*sizeof(float));
+        
+        double* dS2 = malloc(S.row*k.row*sizeof(float));
+        
+        for (int i = 0; i < S.row*k.row; i++)
+        {
+            if (i < S.row)
+            {
+                dS1[i] = S.data[i];
+            }
+            else
+            {
+                dS1[i] = 0;
+            }
+        }
 
+        double*dF_SH2 = malloc(M.col*M.row*sizeof(double));
+        dF_SH2 = qr_solve(M.row, M.col, ddM, dS1);
+
+        float* ddfF_SH = malloc(M.col*M.row*sizeof(float));
+        for (int i = 0; i < M.col*M.row; i++)
+        {
+            ddfF_SH[i] = dF_SH2[i];
+        }
+        matrix finalF_SH = assignMat(M.row, M.col, ddfF_SH);
         
+        return finalF_SH;
 
     }
     
     printf("maximum number of iterations exceeded - FAILED TO CONVERGE\n");
-    
+    matrix error;
+    return error;
     
     
 }

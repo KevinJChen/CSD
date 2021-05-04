@@ -18,46 +18,6 @@
 
 #include "csd.h"
 
-int main()
-{
-    
-    float* R_RH = malloc(9*sizeof(float));
-    R_RH[0] = 2.2728;
-    R_RH[1] = -0.7379;
-    R_RH[2] = 0.2343;
-    R_RH[3] = -0.0602;
-    R_RH[4] = 0.0127;
-    R_RH[5] = -0.0022;
-    R_RH[6] = 0.00034;
-    R_RH[7] = -0.000045;
-    R_RH[8] = 0.0000054;
-
-    float *dSH = malloc(2700*sizeof(float));
-    for (int i = 0; i < 2700; i++)
-    {
-        dSH[i] = i;
-    }
-    matrix SH = assignMat(60, 45, dSH);
-
-    float *dS = malloc(60*sizeof(float));
-    for (int i = 0; i < 60; i++)
-    {
-        dS[i] = i;
-    }
-    matrix S = assignMat(60, 1, dS);
-
-    float *dHR_SH = malloc(2700*sizeof(float));
-    for (int i = 0; i < 2700; i++)
-    {
-        dHR_SH[i] = i;
-    }
-    matrix HR_SH = assignMat(60, 45, dHR_SH);
-
-    csdeconv(R_RH, SH, HR_SH, S, 1.0, 0.1);
-    
-    return 0;
-}
-
 matrix csdeconv(float* R_RH, matrix DW_SH, matrix HR_SH, matrix S, float lambda, float tau)
 {
     // lambda default is 1

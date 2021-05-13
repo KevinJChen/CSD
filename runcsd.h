@@ -39,7 +39,7 @@ typedef struct DIFF_DATA {
     nifti_image *nii_image;
     nifti_image *mask;
     nifti_image *S0;
-    double *single_voxel_storage; 
+    double *single_voxel_storage;
     int n_volumes;
     float *bvals;
     float *bvecs;
@@ -50,7 +50,7 @@ typedef struct DIFF_DATA {
     int n_b_low;
     double delta_lg;
     double delta_sm;
-} DIFF_DATA;    
+} DIFF_DATA;
 
 typedef struct ICOS_TESS {
     int num_vertices;
@@ -110,7 +110,7 @@ int save_output (const char *basedir, OUTPUT_DATA *output);
  ****************************************************************************/
 
 int find_local_maxima(ICOS_TESS *domain, double *values, double min_values,
-		      ICOS_TESS *restart, MAXIMA *maxima_list);    
+              ICOS_TESS *restart, MAXIMA *maxima_list);
 int maxima_compare(const void *m1, const void *m2);
 
 /****************************************************************************
@@ -133,7 +133,7 @@ double *compute_reconstruction_weights(MOW_RECON *mow, int x, int y, int z);
 
 OUTPUT_DATA *initialize_output (nifti_image *template, int nbricks);
 void add_maxima_to_output(OUTPUT_DATA *output, int x, int y, int z,
-			  float **vertlist, MAXIMA *maxima_list, int n_maxima);
+              float **vertlist, MAXIMA *maxima_list, int n_maxima);
 void replace_realsmall_w_zeros(double *input, int size, double tol);
 void __tokenize_line(char *line, const char *tokens, float *split, int *nsplit);
 int load_voxel_double_highb(DIFF_DATA *diff, int x, int y, int z);

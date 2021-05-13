@@ -7,207 +7,26 @@
  */
 
 // #include "../../TrackTools_GUI/tt_current_version.h"
-#include "mow_recon.h"
+#include "runcsd.h"
 #include "nnls.h"
 #include "lssq.h"
 
-
-//int main (int argc, char **argv)
-//{
-//
-//    MOW_RECON mow;
-//    DIFF_DATA diff;
-//
-//    mow.diff = &diff;
-//
-//    mow_initialize_opts(&mow, argc, argv);
-//
-//    /* Load the precomputed spherical domains */
-//    char *strbuf = malloc(sizeof(char)*strlen(mow.datadir) + 15);
-//
-//    fprintf(stderr, "mow_recon (%d) starting...\n", kTT_CURRENT_VERSION);
-//
-//    fprintf(stderr, "Loading spherical domains...\n");
-//    sprintf(strbuf, "%s%c%s", mow.datadir, DIRSEP, "tess_L1.dat");
-//    ICOS_TESS *restart_tess = load_tess_from_file(strbuf);
-//
-//    sprintf(strbuf, "%s%c%s", mow.datadir, DIRSEP, "tess_L2.dat");
-//    ICOS_TESS *deco_tess    = load_tess_from_file(strbuf);
-//
-//    sprintf(strbuf, "%s%c%s", mow.datadir, DIRSEP, "tess_L3.dat");
-//    ICOS_TESS *reco_tess    = load_tess_from_file(strbuf);
-//    if (reco_tess == NULL || deco_tess == NULL || restart_tess == NULL) {
-//        fprintf(stderr, "Spherical tessellation files could not be loaded.\n");
-//        fprintf(stderr, "Make sure that the -datadir option points to the\n");
-//        fprintf(stderr, "directory that contains the 'tess_L*.dat' files.\n");
-//        exit(1);
-//    }
-//    free(strbuf); strbuf = NULL;
-//
-//    mow.reco_tess = reco_tess;
-//    mow.deco_tess = deco_tess;
-//    mow.restart_tess = restart_tess;
-//
-//    /* Set up the output data structure that will become the NIFTI direction
-//     files. */
-//    fprintf(stderr, "Initializing output data structures...\n");
-//    OUTPUT_DATA *output = initialize_output(diff.nii_image, mow.num_output_files);
-//
-//    /* self-explanatory */
-//    fprintf(stderr, "Setting up B matrix...\n");
-//    compute_bmatrix(&diff);
-//    fprintf(stderr, "Computing A matrix (deconvolution)...\n");
-//    make_A_matrix(&mow);
-//    fprintf(stderr, "Computing reconstruction matrix...\n");
-//    make_recon_matrix(&mow);
-//
-//    int n_reco_dirs = reco_tess->num_vertices;
-//    int n_deco_dirs = deco_tess->num_vertices;
-//
-//    /* set up the NNLS solver for multiple solutions using the same A matrix. */
-//    fprintf(stderr, "Preparing non-negative least squares solver...\n");
-//    NNLS_ARENA *nnls = nnls_initialize(mow.A_matrix, diff.n_b_high, n_deco_dirs);
-//
-//    /* initialize the coefficient storage for a single voxel */
-//    double *coef = malloc(sizeof(double) * n_reco_dirs);
-//    if (coef == NULL) {
-//        fprintf(stderr, "Unable to allocate memory for coefficients.\n");
-//        exit(1);
-//    }
-//
-//    /* set up the maxima list. */
-//    MAXIMA *maxima_list  = malloc(sizeof(MAXIMA) * n_reco_dirs);
-//    if (maxima_list == NULL) {
-//        fprintf(stderr, "Unable to allocate memory for maxima list.\n");
-//        exit(1);
-//    }
-//
-//    /*************************************************************************/
-//
-//    if (mow.S0compute == 1) {
-//
-//        LSSQ_ARENA *lssq = lssq_initialize(diff.b_matrices, diff.n_volumes, 6);
-//        if (lssq == NULL) {
-//            fprintf(stderr, "Unable to initialize least-squares solver.\n");
-//            exit(1);
-//        }
-//
-//        float *S0_image = compute_S0(&diff, lssq, mow.log_bad_voxels);
-//        nifti_image *S0_nim = nifti_simple_init_nim();
-//        memcpy(S0_nim, diff.nii_image, sizeof(nifti_image));
-//
-//        S0_nim->datatype = DT_FLOAT32;
-//        S0_nim->ndim     = 3;
-//        S0_nim->nbyper   = 4;
-//        S0_nim->nt       = 1;
-//        S0_nim->nvox     = S0_nim->nx * S0_nim->ny * S0_nim->nz;
-//        S0_nim->dim[4]   = 1;
-//        S0_nim->dim[0]   = 3;
-//        S0_nim->data     = S0_image;
-//        S0_nim->fname    = mow.S0_filename;
-//        S0_nim->iname    = mow.S0_filename;
-//        S0_nim->cal_max  = 0.0;
-//        S0_nim->cal_min  = 0.0;
-//        sprintf(S0_nim->descrip, "TrackTools MOW S0 Data");
-//        diff.S0 = S0_nim;
-//        lssq_free(lssq);
-//        lssq = NULL;
-//
-//        if (mow.S0_filename != NULL) {
-//            fprintf(stderr, "Saving S0 image to %s.\n", mow.S0_filename);
-//            znzFile fp = znzopen(mow.S0_filename, "wb", 0);
-//            nifti_image_write_hdr_img2(S0_nim, 1, "wb", fp, NULL);
-//        }
-//    }
-//
-//    fprintf(stderr, "Starting MOW reconstruction...\n");
-//    /*************************************************************************/
-//
-//    int vx, vy, vz;
-//    double diff_time = diff.delta_lg - diff.delta_sm/3.0;
-//    double determ_d  = (mow.deco_evals[0] *
-//                        mow.deco_evals[1] *
-//                        mow.deco_evals[2]);
-//    double w_scale = sqrt( pow((4.0*M_PI*diff_time),3) * determ_d );
-//    double *reco_matrix = mow.reco_matrix;
-//
-//    for (vz=0; vz<diff.nii_image->nz; vz++) {
-//        for (vy=0; vy<diff.nii_image->ny; vy++) {
-//            for (vx=0; vx<diff.nii_image->nx; vx++) {
-//
-//                double min = 1.0e+99, max = 0;
-//                double *x = NULL; /* nnls solution vector */
-//                double *data = NULL; /* diff-weighted data */
-//                int dec;
-//                int rec;
-//                int n_maxima = 0;
-//
-//                int load_ok = load_voxel_double_highb(&diff, vx, vy, vz);
-//
-//                if (-1 == load_ok) {
-//                    if (mow.log_bad_voxels != 0) {
-//                        fprintf(stderr, "  WARNING: Voxel [%d,%d,%d] was not reconstructed (S0=0).\n",
-//                                vx, vy, vz);
-//                    }
-//                    continue;
-//                } else if (-2 == load_ok) {
-//                    if (mow.log_bad_voxels != 0) {
-//                        fprintf(stderr, "  WARNING: Voxel [%d,%d,%d] was not reconstructed (nan/inf).\n",
-//                                vx, vy, vz);
-//                    }
-//                    continue;
-//                } else if (0 == load_ok) {
-//                    continue;
-//                }
-//
-//                data = diff.single_voxel_storage;
-//                nnls_compute(nnls, mow.A_matrix, data, 1);
-//                x = nnls->x;
-//
-//                /* reset coef to 0 for next run */
-//                memset(coef, 0, n_reco_dirs*sizeof(double));
-//
-//                /* reconstruct coefficients for vertices */
-//                for (rec=0; rec<n_reco_dirs; rec++) {
-//
-//                    /* Eqn #16 */
-//                    for (dec=0; dec<n_deco_dirs; dec++)
-//                        coef[rec] += (x[dec]/w_scale) * reco_matrix[dec*n_reco_dirs+rec];
-//
-//                    if (coef[rec] > max)
-//                        max = coef[rec];
-//                    if (coef[rec] < min)
-//                        min = coef[rec];
-//
-//                }
-//
-//                /* does min/max scaling. Probably not necessary for maxima finding. */
-//                if (1) {
-//                    for (rec=0; rec<n_reco_dirs && min != max; rec++)
-//                        coef[rec] = (coef[rec]-min)/(max-min);
-//                }
-//
-//                n_maxima = find_local_maxima(reco_tess, coef, mow.prob_thresh,
-//                                             restart_tess, maxima_list);
-//
-//                add_maxima_to_output(output, vx, vy, vz,
-//                                     reco_tess->vertices, maxima_list, n_maxima);
-//
-//            }
-//        }
-//
-//        fprintf(stderr, "Slice: %d of %d Complete.\n", vz, diff.nii_image->nz);
-//        fflush(stderr);
-//    }
-//
-//    fprintf(stderr, "MOW Reconstruction complete... saving output...\n");
-//    save_output(mow.output_directory, output);
-//
-//    fprintf(stderr, "Done.\n");
-//    return 0;
-//}
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 
+int main()
+{
+    MOW_RECON mow;
+    DIFF_DATA diff;
+    
+    mow.diff = &diff;
+    
+    printf("SUCCESS!\n");
+    return 0;
+}
 
 /*****************************************************************************
  * computes the FA given 3 eigenvalues.
@@ -262,7 +81,7 @@ float *compute_S0 (DIFF_DATA *diff, LSSQ_ARENA *lssq, int log_bad_voxels)
     
     memset(S0_image, 0, sizeof(float)*nx*ny*nz);
     
-#ifdef DO_TENSOR    
+#ifdef DO_TENSOR
     float **tensor = malloc(sizeof(float *) * 4);
     float **evecs  = malloc(sizeof(float *) * 4);
     float *b       = malloc(sizeof(float)*4);
@@ -280,11 +99,11 @@ float *compute_S0 (DIFF_DATA *diff, LSSQ_ARENA *lssq, int log_bad_voxels)
             for (vx=0; vx<nx; vx++) {
                 
                 double S0;
-#ifdef DO_TENSOR		
+#ifdef DO_TENSOR
                 int nrot = 0;
                 float d[4];
                 float FA;
-#endif		 
+#endif
                 /*
                  if (vx == 54 && vy == 67 && vz == 35) {
                  printf(".\n");
@@ -349,7 +168,7 @@ float *compute_S0 (DIFF_DATA *diff, LSSQ_ARENA *lssq, int log_bad_voxels)
 }
 
 /*****************************************************************************
- * reads command line options and sets up the preferences accordingly. 
+ * reads command line options and sets up the preferences accordingly.
  *****************************************************************************/
 
 void mow_initialize_opts(MOW_RECON *mow, int argc, char **argv)
@@ -358,7 +177,7 @@ void mow_initialize_opts(MOW_RECON *mow, int argc, char **argv)
     
     /*
      char *direction_files_multi[5] = {
-     "V_00_all.nii.gz", 
+     "V_00_all.nii.gz",
      "V_01_all.nii.gz",
      "V_02_all.nii.gz",
      "V_03_all.nii.gz",
@@ -415,7 +234,7 @@ void mow_initialize_opts(MOW_RECON *mow, int argc, char **argv)
             if (opt+1 == argc || argv[opt+1][0] == '-') {
                 fprintf(stderr, "Error: -pthresh requires an argument.\n");
                 exit(1);
-            }	    
+            }
             mow->prob_thresh = fabs(atof(argv[opt+1]));
             opt++;
             continue;
@@ -423,7 +242,7 @@ void mow_initialize_opts(MOW_RECON *mow, int argc, char **argv)
             if (opt+1 == argc || argv[opt+1][0] == '-') {
                 fprintf(stderr, "Error: -mask requires an argument.\n");
                 exit(1);
-            }	    
+            }
             mow->mask_filename = argv[opt+1];
             opt++;
             continue;
@@ -431,7 +250,7 @@ void mow_initialize_opts(MOW_RECON *mow, int argc, char **argv)
             if (opt+1 == argc || argv[opt+1][0] == '-') {
                 fprintf(stderr, "Error: -datadir requires an argument.\n");
                 exit(1);
-            }	    
+            }
             mow->datadir = argv[opt+1];
             opt++;
             continue;
@@ -439,7 +258,7 @@ void mow_initialize_opts(MOW_RECON *mow, int argc, char **argv)
             if (opt+1 == argc || argv[opt+1][0] == '-') {
                 fprintf(stderr, "Error: -ndir requires an argument.\n");
                 exit(1);
-            }	    
+            }
             mow->num_output_files = atoi(argv[opt+1]);
             opt++;
             continue;
@@ -447,7 +266,7 @@ void mow_initialize_opts(MOW_RECON *mow, int argc, char **argv)
             if (opt+1 == argc || argv[opt+1][0] == '-') {
                 fprintf(stderr, "Error: -data requires an argument.\n");
                 exit(1);
-            }	    
+            }
             mow->data_filename = argv[opt+1];
             opt++;
             continue;
@@ -455,7 +274,7 @@ void mow_initialize_opts(MOW_RECON *mow, int argc, char **argv)
             if (opt+1 == argc || argv[opt+1][0] == '-') {
                 fprintf(stderr, "Error: -bval requires an argument.\n");
                 exit(1);
-            }	    
+            }
             mow->bval_filename = argv[opt+1];
             opt++;
             continue;
@@ -463,34 +282,34 @@ void mow_initialize_opts(MOW_RECON *mow, int argc, char **argv)
             if (opt+1 == argc || argv[opt+1][0] == '-') {
                 fprintf(stderr, "Error: -bvec requires an argument.\n");
                 exit(1);
-            }	    
+            }
             mow->bvec_filename = argv[opt+1];
             opt++;
-            continue;	    
+            continue;
         } else if (0 == strcmp(argv[opt], "-radius")) {
             if (opt+1 == argc || argv[opt+1][0] == '-') {
                 fprintf(stderr, "Error: -radius requires an argument.\n");
                 exit(1);
-            }	    
+            }
             mow->diff_radius = atof(argv[opt+1]);
             opt++;
-            continue;	    
+            continue;
         } else if (0 == strcmp(argv[opt], "-delta_lg")) {
             if (opt+1 == argc || argv[opt+1][0] == '-') {
                 fprintf(stderr, "Error: -delta_lg requires an argument.\n");
                 exit(1);
-            }	    
+            }
             mow->diff->delta_lg = atof(argv[opt+1]);
             opt++;
-            continue;	    
+            continue;
         } else if (0 == strcmp(argv[opt], "-delta_sm")) {
             if (opt+1 == argc || argv[opt+1][0] == '-') {
                 fprintf(stderr, "Error: -delta_sm requires an argument.\n");
                 exit(1);
-            }	    
+            }
             mow->diff->delta_sm = atof(argv[opt+1]);
             opt++;
-            continue;	    
+            continue;
         } else {
             fprintf(stderr, "Ignoring junk on command line: %s\n", argv[opt]);
             fprintf(stderr, "Use -h to see a list of options.\n");
@@ -551,7 +370,7 @@ void mow_initialize_opts(MOW_RECON *mow, int argc, char **argv)
         fprintf(stderr, "with caution.\n\n");
         //exit(1);
     } else {
-        nii_recast_to_int32(mow->diff->mask);    
+        nii_recast_to_int32(mow->diff->mask);
     }
     
 }
@@ -636,7 +455,7 @@ OUTPUT_DATA *initialize_output (nifti_image *template, int nfiles)
         out[i]->scl_inter = 0.0;
         out[i]->cal_max   = 0.0;
         out[i]->cal_min   = 0.0;
-        out[i]->nifti_type= NIFTI_FTYPE_NIFTI1_1;	
+        out[i]->nifti_type= NIFTI_FTYPE_NIFTI1_1;
         sprintf(out[i]->descrip, "TrackTools MOW Reconstruction");
         
         nbl[i] = malloc(sizeof(nifti_brick_list));
@@ -684,7 +503,7 @@ OUTPUT_DATA *initialize_output (nifti_image *template, int nfiles)
  * in the brick list. That is, (x -> brick 0, y -> brick 1, z-> brick 2) and
  * the process is repeated for each maxima.
  *****************************************************************************/
-void add_maxima_to_output(OUTPUT_DATA *output, int x, int y, int z, 
+void add_maxima_to_output(OUTPUT_DATA *output, int x, int y, int z,
                           float **vertlist, MAXIMA *maxima_list, int n_maxima)
 {
     
@@ -699,16 +518,16 @@ void add_maxima_to_output(OUTPUT_DATA *output, int x, int y, int z,
     
     for (i=0; i<n_maxima; i++) {
         float *mvert = vertlist[ maxima_list[i].index ];
-        ((float *)output->nbl[i]->bricks[0])[index] = mvert[0]; 
-        ((float *)output->nbl[i]->bricks[1])[index] = mvert[1]; 
-        ((float *)output->nbl[i]->bricks[2])[index] = mvert[2]; 
+        ((float *)output->nbl[i]->bricks[0])[index] = mvert[0];
+        ((float *)output->nbl[i]->bricks[1])[index] = mvert[1];
+        ((float *)output->nbl[i]->bricks[2])[index] = mvert[2];
     }
     
 }
 
 /*****************************************************************************
  * Writes the OUTPUT_DATA structure to disk. One file for each nifti_image
- * in the OUTPUT_DATA structure. 
+ * in the OUTPUT_DATA structure.
  *
  * Files are saved in basedir, and are strictly named to be compatible with
  * track_tracker.
@@ -852,7 +671,7 @@ void read_diff_data_from_file(char *filename, DIFF_DATA *diff)
     }
     
     nim = nifti_image_read_bricks(filename, 0, NULL, nbl);
-    if (nim == NULL) { 
+    if (nim == NULL) {
         fprintf(stderr, "Unable to read diffusion data file.\n");
         exit(1);
     }
@@ -866,7 +685,7 @@ void read_diff_data_from_file(char *filename, DIFF_DATA *diff)
     diff->nii_image      = nim;
     diff->n_volumes      = nbl->nbricks;
     
-    diff->single_voxel_storage = malloc(sizeof(double) * nbl->nbricks);    
+    diff->single_voxel_storage = malloc(sizeof(double) * nbl->nbricks);
     if (diff->single_voxel_storage == NULL) {
         fprintf(stderr, "Unable to allocate memory for diffusion voxel storage.\n");
         exit(1);
@@ -874,8 +693,8 @@ void read_diff_data_from_file(char *filename, DIFF_DATA *diff)
 }
 
 /*****************************************************************************
- * Reads a text file into a floating point array. Note that file is assumed to 
- * be a text file and behavior is undefined if it is not. 
+ * Reads a text file into a floating point array. Note that file is assumed to
+ * be a text file and behavior is undefined if it is not.
  *****************************************************************************/
 int read_acsii_file_to_float_array(char *filename, float *data, int data_size)
 {
@@ -927,7 +746,7 @@ int read_acsii_file_to_float_array(char *filename, float *data, int data_size)
 }
 
 /*****************************************************************************
- * Uses the find the relative maxima of the spherical function over the 
+ * Uses the find the relative maxima of the spherical function over the
  * spherical domain. Note that each domain file contains a connectivity list
  * that allows one to find the immediate neighbors of a vertex in O(1) time.
  *
@@ -936,13 +755,13 @@ int read_acsii_file_to_float_array(char *filename, float *data, int data_size)
  *
  * Finally, duplicates and antipodally symmetric vertices are removed, and the
  * maxima are sorted by value.
- * 
+ *
  * returns the number of vertices found.
  *****************************************************************************/
 
 /* size of *values should be equal to number of elements in *domain->vertices */
 int find_local_maxima(ICOS_TESS *domain, double *values, double min_value,
-                      ICOS_TESS *restart, MAXIMA *maxima_list) 
+                      ICOS_TESS *restart, MAXIMA *maxima_list)
 {
     
     int v1, v2, j;
@@ -1001,7 +820,7 @@ int find_local_maxima(ICOS_TESS *domain, double *values, double min_value,
             float *pb_vert = domain->vertices[rs_vert];
             float *cp_vert = domain->vertices[maxima_list[j].index];
             dp = fabs(pb_vert[0]*cp_vert[0] +
-                      pb_vert[1]*cp_vert[1] + 
+                      pb_vert[1]*cp_vert[1] +
                       pb_vert[2]*cp_vert[2] );
             if (dp > 0.939693) {
                 /* reject this maxima, duplicate */
@@ -1046,7 +865,7 @@ double *compute_reconstruction_weights(MOW_RECON *mow, int x, int y, int z)
  * Only the upper triangular entries are stored. Note that the off-diagonal
  * entries are multiplied by 2. This is a MAS convention that makes computing
  * DTI easier. We do it here, and note that the factor of two is removed when
- * the A matrix is created. 
+ * the A matrix is created.
  *****************************************************************************/
 
 void compute_bmatrix(DIFF_DATA *diff)
@@ -1097,7 +916,7 @@ double *make_recon_matrix(MOW_RECON *mow)
     
     double *reco_matrix;
     double diff_rad_sq = mow->diff_radius * mow->diff_radius;
-    double diff_time   = mow->diff->delta_lg - mow->diff->delta_sm/3.0; 
+    double diff_time   = mow->diff->delta_lg - mow->diff->delta_sm/3.0;
     
     int n_deco_dirs = deco_tess->num_vertices;
     int n_reco_dirs = reco_tess->num_vertices;
@@ -1127,7 +946,7 @@ double *make_recon_matrix(MOW_RECON *mow)
             rt[4] = r[0]*r[1] * diff_rad_sq;
             rt[5] = r[0]*r[2] * diff_rad_sq;
             
-            for (n=0; n<6; n++) 
+            for (n=0; n<6; n++)
                 rt_d_r += mow->D_i_inv[i]->data[n] * (double)rt[n];
             
             exp_arg = -(rt_d_r/(4.0 * diff_time));
@@ -1148,7 +967,7 @@ double *make_recon_matrix(MOW_RECON *mow)
  * Creates the A matrix from the paper. Page 168, including Eqn #15
  *****************************************************************************/
 
-double *make_A_matrix(MOW_RECON *mow) 
+double *make_A_matrix(MOW_RECON *mow)
 {
     
     MAT33 *tx1 = NULL;
@@ -1201,15 +1020,15 @@ double *make_A_matrix(MOW_RECON *mow)
     
     /* matrices used to create an orthogonal set of vectors with the deconvolution
      vector as primary eigenvector. The secondary and tertiary evectors can be
-     oriented any way. These matrices rotate the original deconvolution vector 
+     oriented any way. These matrices rotate the original deconvolution vector
      out of the plane, then the second evector is created by the cross product
      of the rotated vector with the original. Then, the final evector is created
      by the cross product of the original vector and the secondary. */
-    tx1 = MAT33_make(ca, -sa , 0.0, 
+    tx1 = MAT33_make(ca, -sa , 0.0,
                      sa,  ca , 0.0,
                      0.0, 0.0, 1.0);
     
-    tx2 = MAT33_make(ca , 0.0, sa, 
+    tx2 = MAT33_make(ca , 0.0, sa,
                      0.0, 1.0, 0.0,
                      -sa, 0.0, ca);
     
@@ -1239,7 +1058,7 @@ double *make_A_matrix(MOW_RECON *mow)
         VEC_crossp(egv1, tmp_v, egv2);
         VEC_make_unit(egv2);
         
-        MAT33_assign(tmp_v[0], egv1[0], egv2[0], 
+        MAT33_assign(tmp_v[0], egv1[0], egv2[0],
                      tmp_v[1], egv1[1], egv2[1],
                      tmp_v[2], egv1[2], egv2[2], Q_mat);
         
@@ -1321,7 +1140,7 @@ double *make_A_matrix(MOW_RECON *mow)
 }
 
 /*****************************************************************************
- * Loads a spherical domain into the appropiate data structure. See 
+ * Loads a spherical domain into the appropiate data structure. See
  * mow_recon.h for a description of the data structure. Returns NULL if
  * memory allocation fails or some other IO problem prevents the data from
  * loading.
@@ -1403,7 +1222,7 @@ ICOS_TESS *load_tess_from_file(const char *tess_file)
         
         tess->connectivity[vert][0] = conn_size;
         
-        iobytes = fread(tess->connectivity[vert]+1, conn_size, 4, f);	
+        iobytes = fread(tess->connectivity[vert]+1, conn_size, 4, f);
         if (iobytes != 4) {
             fprintf(stderr, "Error reading connectivity from file.\n");
             perror("Reason");
@@ -1478,7 +1297,7 @@ void replace_realsmall_w_zeros(double *input, int size, double tol)
 }
 
 /*****************************************************************************
- * Loads a voxel's diffusion data and divides it by the voxel's S0. 
+ * Loads a voxel's diffusion data and divides it by the voxel's S0.
  * - Tests to see if the voxel is masked by diff->mask.
  * - Returns only the diffusion-weighted values (b > 200)
  * - returns 1 is loading succeeds
@@ -1500,9 +1319,9 @@ int load_voxel_double_highb(DIFF_DATA *diff, int x, int y, int z) {
         if (mask != NULL && mask[index] == 0) return 0;
     }
     
-    S0 = (double) read_nii_voxel_anytype(diff->S0->data, 
-					 index, 
-					 diff->S0->datatype);
+    S0 = (double) read_nii_voxel_anytype(diff->S0->data,
+                     index,
+                     diff->S0->datatype);
     if (S0 == 0) return -1;
     
     nifti_brick_list *nbl = diff->nii_brick_list;
@@ -1510,16 +1329,16 @@ int load_voxel_double_highb(DIFF_DATA *diff, int x, int y, int z) {
     for (i=0; i<diff->n_b_high; i++) {
         
         int b_ind = diff->b_high_ind[i];
-	
-	data[i] = (double)read_nii_voxel_anytype(nbl->bricks[b_ind], 
-						 index, 
-						 diff->nii_image->datatype);
-	
+    
+    data[i] = (double)read_nii_voxel_anytype(nbl->bricks[b_ind],
+                         index,
+                         diff->nii_image->datatype);
+    
         if (isinf(data[i]) || isnan(data[i])) {
             return -2;
         }
         
-        data[i] = (data[i]*scl_slope+scl_inter)/S0; 
+        data[i] = (data[i]*scl_slope+scl_inter)/S0;
         
     }
     
@@ -1528,7 +1347,7 @@ int load_voxel_double_highb(DIFF_DATA *diff, int x, int y, int z) {
 }
 
 /*****************************************************************************
- * Loads a voxel's diffusion data and DOES NOT divide it by the voxel's S0. 
+ * Loads a voxel's diffusion data and DOES NOT divide it by the voxel's S0.
  * - Tests to see if the voxel is masked by diff->mask.
  * - Returns all data.
  * - returns 1 is loading succeeds
@@ -1559,9 +1378,9 @@ int load_voxel_double_all(DIFF_DATA *diff, int x, int y, int z, double *dest) {
     
     for (i=0; i<diff->n_volumes; i++) {
 
-	data[i] = (double)read_nii_voxel_anytype(nbl->bricks[i], 
-						 index, 
-						 diff->nii_image->datatype);
+    data[i] = (double)read_nii_voxel_anytype(nbl->bricks[i],
+                         index,
+                         diff->nii_image->datatype);
 
         if (isinf(data[i]) || isnan(data[i])) {
             return -1;
@@ -1575,8 +1394,8 @@ int load_voxel_double_all(DIFF_DATA *diff, int x, int y, int z, double *dest) {
 }
 
 /*****************************************************************************
- * Loads a voxel's data and casts from any type to double. 
- * returns 0 on undefined type. 
+ * Loads a voxel's data and casts from any type to double.
+ * returns 0 on undefined type.
  *****************************************************************************/
 
 double read_nii_voxel_anytype(void *src, int index, int datatype)
@@ -1584,33 +1403,33 @@ double read_nii_voxel_anytype(void *src, int index, int datatype)
     double dest = 0;
     
     switch (datatype) {
-	case DT_UINT8:
-	    dest = (double) ( (unsigned char *)(src))[index];
-	    break;
-	case DT_INT8:
-	    dest = (double) (          (char *)(src))[index];
-	    break;
-	case DT_UINT16:
-	    dest = (double) ((unsigned short *)(src))[index];
-	    break;
-	case DT_INT16:
-	    dest = (double) (         (short *)(src))[index];
-	    break;
-	case DT_UINT32:
-	    dest = (double) (  (unsigned int *)(src))[index];
-	    break;
-	case DT_INT32:
-	    dest = (double) (           (int *)(src))[index];
-	    break;
-	case DT_FLOAT32:
-	    dest = (double) (         (float *)(src))[index];
-	    break;
-	case DT_FLOAT64:
-	    dest = (                 (double *)(src))[index];
-	    break;
-	default: 
-	    fprintf(stderr, "Nifti datatype not supported: %s\n", 
-		    nifti_datatype_string(datatype));
+    case DT_UINT8:
+        dest = (double) ( (unsigned char *)(src))[index];
+        break;
+    case DT_INT8:
+        dest = (double) (          (char *)(src))[index];
+        break;
+    case DT_UINT16:
+        dest = (double) ((unsigned short *)(src))[index];
+        break;
+    case DT_INT16:
+        dest = (double) (         (short *)(src))[index];
+        break;
+    case DT_UINT32:
+        dest = (double) (  (unsigned int *)(src))[index];
+        break;
+    case DT_INT32:
+        dest = (double) (           (int *)(src))[index];
+        break;
+    case DT_FLOAT32:
+        dest = (double) (         (float *)(src))[index];
+        break;
+    case DT_FLOAT64:
+        dest = (                 (double *)(src))[index];
+        break;
+    default:
+        fprintf(stderr, "Nifti datatype not supported: %s\n",
+            nifti_datatype_string(datatype));
     }
     
     return dest;

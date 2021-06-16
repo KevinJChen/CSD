@@ -21,44 +21,64 @@ int main(int argc, char**argv)
 {
     MOW_RECON mow;
     DIFF_DATA diff;
-    
     mow.diff = &diff;
     
     mow_initialize_opts(&mow, argc, argv);
-    
-//    /* Load the precomputed spherical domains */
-//    char *strbuf = malloc(sizeof(char)*strlen(mow.datadir) + 15);
-//
-//
-//    // fprintf(stderr, "mow_recon (%d) starting...\n", kTT_CURRENT_VERSION);
-//
-//    fprintf(stderr, "Loading spherical domains...\n");
-//    sprintf(strbuf, "%s%c%s", mow.datadir, DIRSEP, "tess_L1.dat");
-//    ICOS_TESS *restart_tess = load_tess_from_file(strbuf);
-//
-//    sprintf(strbuf, "%s%c%s", mow.datadir, DIRSEP, "tess_L2.dat");
-//    ICOS_TESS *deco_tess    = load_tess_from_file(strbuf);
-//
-//    sprintf(strbuf, "%s%c%s", mow.datadir, DIRSEP, "tess_L3.dat");
-//    ICOS_TESS *reco_tess    = load_tess_from_file(strbuf);
-//    if (reco_tess == NULL || deco_tess == NULL || restart_tess == NULL) {
-//        fprintf(stderr, "Spherical tessellation files could not be loaded.\n");
-//        fprintf(stderr, "Make sure that the -datadir option points to the\n");
-//        fprintf(stderr, "directory that contains the 'tess_L*.dat' files.\n");
-//        exit(1);
-//    }
-//    free(strbuf); strbuf = NULL;
-//
-//    mow.reco_tess = reco_tess;
-//    mow.deco_tess = deco_tess;
-//    mow.restart_tess = restart_tess;
     
     /* Set up the output data structure that will become the NIFTI direction
          files. */
     fprintf(stderr, "Initializing output data structures...\n");
     OUTPUT_DATA *output = initialize_output(diff.nii_image, mow.num_output_files);
     
+    /* Load the precomputed spherical domains */
+    char *strbuf = malloc(sizeof(char)*strlen(mow.datadir) + 15);
+    
+    fprintf(stderr, "Loading spherical domains...\n");
+    sprintf(strbuf, "%s%c%s", mow.datadir, DIRSEP, "tess_L1.dat");
+    ICOS_TESS *restart_tess = load_tess_from_file(strbuf);
+    
+    sprintf(strbuf, "%s%c%s", mow.datadir, DIRSEP, "tess_L3.dat");
+    ICOS_TESS *reco_tess    = load_tess_from_file(strbuf);
+    if (reco_tess == NULL || restart_tess == NULL) {
+        fprintf(stderr, "Spherical tessellation files could not be loaded.\n");
+        fprintf(stderr, "Make sure that the -datadir option points to the\n");
+        fprintf(stderr, "directory that contains the 'tess_L*.dat' files.\n");
+        exit(1);
+    }
+    
+    free(strbuf); strbuf = NULL;
+    
+    mow.reco_tess = reco_tess;
+    mow.restart_tess = restart_tess;
+    
+    /* set up the maxima list */
+    MAXIMA *maxima_list = malloc(sizeof(MAXIMA) * n_reco_dirs);
+    if (maxima_list == NULL)
+    {
+        fprintf(stderr, "Unable to allocate memory for maxima list. \n");
+        exit(1);
+    }
+    
+    for (int vz=0; z < diff.nii_image->nz; vz++)
+    {
+        for (int vy=0; y < diff.nii_image->ny; vy++)
+        {
+            for (int vx=0; x < diff.nii_image->nx; vx++)
+            {
+                
+                
+                
+            }
+        }
+    }
+    
+    
+    
 
+    
+    
+    
+    
     double *data = mow.diff->single_voxel_storage;
     
     int index = nii_voxel3_index(mow.diff->nii_image, 30, 20, 20);
@@ -71,18 +91,18 @@ int main(int argc, char**argv)
         
         data[i] = (double) read_nii_voxel_anytype(nbl->bricks[b_ind], index, mow.diff->nii_image->datatype);
         
-        printf("%d\n", mow.diff->n_b_high);
-        printf("%f\n", data[i]);
+        // printf("%f\n", data[i]);
         
     }
     
-    printf("%d\n", mow.diff->nii_image->nx);
-    printf("%d\n", mow.diff->nii_image->ny);
-    printf("%d\n", mow.diff->nii_image->nz);
-    printf("%d\n", mow.diff->nii_image->nt);
-    printf("%d\n", mow.diff->nii_image->nu);
-    printf("%d\n", mow.diff->nii_image->nv);
-    printf("%d\n", mow.diff->nii_image->nw);
+
+//    printf("%d\n", mow.diff->nii_image->nx);
+//    printf("%d\n", mow.diff->nii_image->ny);
+//    printf("%d\n", mow.diff->nii_image->nz);
+//    printf("%d\n", mow.diff->nii_image->nt);
+//    printf("%d\n", mow.diff->nii_image->nu);
+//    printf("%d\n", mow.diff->nii_image->nv);
+//    printf("%d\n", mow.diff->nii_image->nw);
     
     return 0;
 }

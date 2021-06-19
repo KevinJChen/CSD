@@ -25,6 +25,7 @@ int main(int argc, char**argv)
     
     mow_initialize_opts(&mow, argc, argv);
     
+    
     /* Set up the output data structure that will become the NIFTI direction
          files. */
     fprintf(stderr, "Initializing output data structures...\n");
@@ -51,6 +52,14 @@ int main(int argc, char**argv)
     mow.reco_tess = reco_tess;
     mow.restart_tess = restart_tess;
     
+    int m = diff.n_b_high;
+    int n = mow.reco_tess->num_vertices;
+    int n_reco_dirs = n;
+    int k = 30;
+    
+    /* initialize the coefficient storage for a single voxel */
+    double *coef = malloc(sizeof(double) * n_reco_dirs);
+    
     /* set up the maxima list */
     MAXIMA *maxima_list = malloc(sizeof(MAXIMA) * n_reco_dirs);
     if (maxima_list == NULL)
@@ -59,24 +68,68 @@ int main(int argc, char**argv)
         exit(1);
     }
     
-    for (int vz=0; z < diff.nii_image->nz; vz++)
+    /* RH */
+    
+    /* DW_SH */
+    
+    /* HR_SH */
+    
+    /* S */
+    
+    /* lambda */
+    float lambda = 1;
+    
+    /* tau */
+    float tau = 0.1;
+    
+    
+    fprintf(stderr, "Starting CSD reconstruction...\n");
+    /*
+    long unsigned int count = 0;
+    for (int vz=0; vz < diff.nii_image->nz; vz++)
     {
-        for (int vy=0; y < diff.nii_image->ny; vy++)
+        for (int vy=0; vy < diff.nii_image->ny; vy++)
         {
-            for (int vx=0; x < diff.nii_image->nx; vx++)
+            for (int vx=0; vx < diff.nii_image->nx; vx++)
             {
+                
+                int n_maxima = 0;
+                
+                MAXIMA* max_list = malloc(sizeof(MAXIMA)*mow.reco_tess->num_vertices);
+                
+                int load_ok = load_voxel_double_highb(&diff, vx, vy, vz);
+                if (-1 == load_ok)
+                {
+                    if (mow.log_bad_voxels != 0)
+                    {
+                        fprintf(stderr, " WARNING: Voxel [%d, %d, %d] was not reconstructed (S0=0).\n", vx, vy, vz);
+                    }
+                    continue;
+                } else if (-2 == load_ok)
+                {
+                    if (mow.log_bad_voxels != 0)
+                    {
+                        fprintf(stderr, " WARNING: Voxel [%d, %d, %d] was not reconstructed (nan/inf).\n", vx, vy, vz);
+                    }
+                    continue;
+                } else if (0 == load_ok)
+                {
+                    // Mask hit
+                    count++;
+                    continue;
+                }
+                
+                double* e = diff.single_voxel_storage;
+                
                 
                 
                 
             }
         }
+        fprintf(stderr, "Slice: %d of %d Complete.\n", vz, diff.nii_image->nz);
+        fflush(stderr);
     }
-    
-    
-    
-
-    
-    
+    */
     
     
     double *data = mow.diff->single_voxel_storage;

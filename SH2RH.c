@@ -270,6 +270,17 @@ matrix eval_ALP(int l, float el[], size_t size)
 }
 
 
+float* amp2SH(float* S, size_t size)
+{
+    float* SH = malloc(sizeof(float)*size);
+    
+    matrix mS = assignMat(size, 1, S);
+    matrix mI = mpinverseMat(mS);
+    
+    return multiplyMat(mI, mS);
+}
+
+
 /*
  
  HELPER FUNCTIONS

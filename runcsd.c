@@ -59,6 +59,11 @@ int main(int argc, char**argv)
     
     /* initialize the coefficient storage for a single voxel */
     double *coef = malloc(sizeof(double) * n_reco_dirs);
+    if (coef == NULL)
+    {
+        fprintf(stderr, "Unable to allocate memory for maxima list.\n");
+        exit(1);
+    }
     
     /* set up the maxima list */
     MAXIMA *maxima_list = malloc(sizeof(MAXIMA) * n_reco_dirs);
@@ -68,11 +73,32 @@ int main(int argc, char**argv)
         exit(1);
     }
     
-    /* RH */
+    printf("Allocating memory...\n");
+    
+    float *bvec = diff.bvecs;
+    printf("diff->n_volumes: %d\n", diff.n_volumes);
+    
+    for (int i = 0; i < diff.n_volumes, i++)
+    {
+        
+    }
+    
+    float **BG = malloc(sizeof(float*) * 3);
+    for (int i = 0; i < 3; i++)
+    {
+        BG[i] = malloc(sizeof(float)*m)
+    }
+    
+    
     
     /* DW_SH */
+
     
     /* HR_SH */
+    
+    /* RH */
+    float* RH = malloc(sizeof(float)*n);
+    // SH2RH(
     
     /* S */
     
@@ -82,82 +108,114 @@ int main(int argc, char**argv)
     /* tau */
     float tau = 0.1;
     
+    float* CSD_image = malloc(sizeof(float) * diff.nii_image->nz * diff.nii_image->ny * diff.nii_image->nx);
     
     fprintf(stderr, "Starting CSD reconstruction...\n");
-    /*
-    long unsigned int count = 0;
-    for (int vz=0; vz < diff.nii_image->nz; vz++)
-    {
-        for (int vy=0; vy < diff.nii_image->ny; vy++)
-        {
-            for (int vx=0; vx < diff.nii_image->nx; vx++)
-            {
-                
-                int n_maxima = 0;
-                
-                MAXIMA* max_list = malloc(sizeof(MAXIMA)*mow.reco_tess->num_vertices);
-                
-                int load_ok = load_voxel_double_highb(&diff, vx, vy, vz);
-                if (-1 == load_ok)
-                {
-                    if (mow.log_bad_voxels != 0)
-                    {
-                        fprintf(stderr, " WARNING: Voxel [%d, %d, %d] was not reconstructed (S0=0).\n", vx, vy, vz);
-                    }
-                    continue;
-                } else if (-2 == load_ok)
-                {
-                    if (mow.log_bad_voxels != 0)
-                    {
-                        fprintf(stderr, " WARNING: Voxel [%d, %d, %d] was not reconstructed (nan/inf).\n", vx, vy, vz);
-                    }
-                    continue;
-                } else if (0 == load_ok)
-                {
-                    // Mask hit
-                    count++;
-                    continue;
-                }
-                
-                double* e = diff.single_voxel_storage;
-                
-                
-                
-                
-            }
-        }
-        fprintf(stderr, "Slice: %d of %d Complete.\n", vz, diff.nii_image->nz);
-        fflush(stderr);
-    }
-    */
     
+//    long unsigned int count = 0;
+//    for (int vz=0; vz < diff.nii_image->nz; vz++)
+//    {
+//        for (int vy=0; vy < diff.nii_image->ny; vy++)
+//        {
+//            for (int vx=0; vx < diff.nii_image->nx; vx++)
+//            {
+//
+//                int n_maxima = 0;
+//
+//                MAXIMA* max_list = malloc(sizeof(MAXIMA)*mow.reco_tess->num_vertices);
+//                int load_ok = load_voxel_double_highb(&diff, vx, vy, vz);
+//                if (-1 == load_ok)
+//                {
+//                    if (mow.log_bad_voxels != 0)
+//                    {
+//                        fprintf(stderr, " WARNING: Voxel [%d, %d, %d] was not reconstructed (S0=0).\n", vx, vy, vz);
+//                    }
+//                    continue;
+//                } else if (-2 == load_ok)
+//                {
+//                    if (mow.log_bad_voxels != 0)
+//                    {
+//                        fprintf(stderr, " WARNING: Voxel [%d, %d, %d] was not reconstructed (nan/inf).\n", vx, vy, vz);
+//                    }
+//                    continue;
+//                } else if (0 == load_ok)
+//                {
+//                    // Mask hit
+//                    count++;
+//                    continue;
+//                }
+//
+//                /* diff-weighted data */
+//                double* e = diff.single_voxel_storage;
+//
+//
+//                /* CSD thing here */
+//
+//
+//                n_maxima = find_local_maxima(reco_tess, coef, mow.prob_thresh, restart_tess, maxima_list);
+//
+//                add_maxima_to_output(output, vx, vy, vz, reco_tess->vertices, maxima_list, n_maxima);
+//
+//                // CSD_image[count] =
+//
+//                /* reset coef to 0 for next run */
+//                memset(coef, 0, n_reco_dirs*sizeof(double));
+//
+//            }
+//        }
+//        fprintf(stderr, "Slice: %d of %d Complete.\n", vz, diff.nii_image->nz);
+//        fflush(stderr);
+//    }
+//
+//    if (mow.S0compute == 1)
+//    {
+//
+//        nifti_image *S0_nim = nifti_simple_init_nim();
+//        memcpy(S0_nim, diff.nii_image, sizeof(nifti_image));
+//
+//        S0_nim->datatype = DT_FLOAT32;
+//        S0_nim->ndim     = 3;
+//        S0_nim->nbyper   = 4;
+//        S0_nim->nt       = 1;
+//        S0_nim->nvox     = S0_nim->nx * S0_nim->ny * S0_nim->nz;
+//        S0_nim->dim[4]   = 1;
+//        S0_nim->dim[0]   = 3;
+//        S0_nim->data     = CSD_image;
+//        S0_nim->fname    = mow.S0_filename;
+//        S0_nim->iname    = mow.S0_filename;
+//        S0_nim->cal_max  = 0.0;
+//        S0_nim->cal_min  = 0.0;
+//
+//        fprintf(stderr, "Saving S0 image to %s.\n", mow.S0_filename);
+//        znzFile fp = znzopen(mow.S0_filename, "wb", 0);
+//        nifti_image_write_hdr_img2(S0_nim, 1, "wb", fp, NULL);
+//    }
+//
+//    fprintf(stderr, "CSD Reconstruction complete... saving output...\n");
+//    save_output(mow.output_directory, output);
+//
+    fprintf(stderr, "Done.\n");
     
-    double *data = mow.diff->single_voxel_storage;
+    /* free memory */
     
-    int index = nii_voxel3_index(mow.diff->nii_image, 30, 20, 20);
-    
-    nifti_brick_list *nbl = mow.diff->nii_brick_list;
-    for (int i = 0; i < mow.diff->n_b_high; i++)
-    {
-
-        int b_ind = mow.diff->b_high_ind[i];
-        
-        data[i] = (double) read_nii_voxel_anytype(nbl->bricks[b_ind], index, mow.diff->nii_image->datatype);
-        
-        // printf("%f\n", data[i]);
-        
-    }
-    
-
-//    printf("%d\n", mow.diff->nii_image->nx);
-//    printf("%d\n", mow.diff->nii_image->ny);
-//    printf("%d\n", mow.diff->nii_image->nz);
-//    printf("%d\n", mow.diff->nii_image->nt);
-//    printf("%d\n", mow.diff->nii_image->nu);
-//    printf("%d\n", mow.diff->nii_image->nv);
-//    printf("%d\n", mow.diff->nii_image->nw);
+    free(CSD_image);
     
     return 0;
+//    double *data = mow.diff->single_voxel_storage;
+//
+//    int index = nii_voxel3_index(diff->nii_image, 30, 20, 20);
+//
+//    nifti_brick_list *nbl = mow.diff->nii_brick_list;
+//    for (int i = 0; i < mow.diff->n_b_high; i++)
+//    {
+//
+//        int b_ind = mow.diff->b_high_ind[i];
+//
+//        data[i] = (double) read_nii_voxel_anytype(nbl->bricks[b_ind], index, mow.diff->nii_image->datatype);
+//
+//        // printf("%f\n", data[i]);
+//
+//    }
 }
 
 /*****************************************************************************

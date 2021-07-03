@@ -20,6 +20,8 @@ float* gen_delta(float el[], size_t size_e, matrix az, int lmax);
 matrix eval_SH(int l, float el[], size_t size_e, matrix az);
 matrix eval_ALP(int l, float el[], size_t size);
 
+float* amp2SH(float* S, size_t, size);
+
 /* helper functions */
 float * cosEl(float el[], size_t size);
 float factorial(int num);

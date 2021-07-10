@@ -10,6 +10,8 @@
 #include "runcsd.h"
 #include "nnls.h"
 #include "lssq.h"
+#include "SH2RH.h"
+#include "csd.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -75,19 +77,24 @@ int main(int argc, char**argv)
     
     printf("Allocating memory...\n");
     
-    float *bvec = diff.bvecs;
-    printf("diff->n_volumes: %d\n", diff.n_volumes);
     
-    for (int i = 0; i < diff.n_volumes, i++)
+    /* bvec list - split diff.n_volumes*3 */
+    // float *bvec = diff.bvecs;
+    
+    /* dir300 */
+    float *dir300 = malloc(sizeof(float)*900);
+    float *dSH = malloc(sizeof(float)*300);
+    
+    dir300 = diff.dir300;
+    dSH = dir3002SH(dir300, 900);
+    
+    
+    for (int i = 0; i < 900; i++)
     {
-        
+        printf("dSH[%d] = %f\n", i, dSH[i]);
     }
     
-    float **BG = malloc(sizeof(float*) * 3);
-    for (int i = 0; i < 3; i++)
-    {
-        BG[i] = malloc(sizeof(float)*m)
-    }
+    
     
     
     
@@ -97,7 +104,7 @@ int main(int argc, char**argv)
     /* HR_SH */
     
     /* RH */
-    float* RH = malloc(sizeof(float)*n);
+    // float* RH = malloc(sizeof(float)*n);
     // SH2RH(
     
     /* S */
@@ -197,7 +204,8 @@ int main(int argc, char**argv)
     fprintf(stderr, "Done.\n");
     
     /* free memory */
-    
+    free(dir300);
+    //free(dSH);
     free(CSD_image);
     
     return 0;
@@ -500,6 +508,14 @@ void mow_initialize_opts(MOW_RECON *mow, int argc, char **argv)
             mow->diff->delta_sm = atof(argv[opt+1]);
             opt++;
             continue;
+        } else if (0 == strcmp(argv[opt], "-dir300")) {
+            if (opt+1 == argc || argv[opt+1][0] == '-') {
+                fprintf(stderr, "Error: -dir300 requires an argument.\n");
+                exit(1);
+            }
+            mow->dir300_filename = argv[opt+1];
+            opt++;
+            continue;
         } else {
             fprintf(stderr, "Ignoring junk on command line: %s\n", argv[opt]);
             fprintf(stderr, "Use -h to see a list of options.\n");
@@ -541,6 +557,10 @@ void mow_initialize_opts(MOW_RECON *mow, int argc, char **argv)
         fprintf(stderr, "The -bvec <path> option is required to specify the location\n");
         fprintf(stderr, "of the gradient directions for this data set.\n");
         exit(1);
+    } else if (mow->dir300_filename == NULL)
+    {
+        fprintf(stderr, "The -dir300 <path> option is required to specify the location\n");
+        fprintf(stderr, "of the dir300.");
     }
     
     /* these functions call exit() if anything bad happens. */
@@ -550,6 +570,8 @@ void mow_initialize_opts(MOW_RECON *mow, int argc, char **argv)
     read_bvals_from_file(    mow->bval_filename, mow->diff);
     fprintf(stderr, "Loading gradient vectors...\n");
     read_bvecs_from_file(    mow->bvec_filename, mow->diff);
+    fprintf(stderr, "Loading dir300...\n");
+    read_dir300_from_file( mow->dir300_filename, mow->diff);
     
     fprintf(stderr, "Loading binary mask...\n");
     mow->diff->mask = nifti_image_read(mow->mask_filename, 1);
@@ -880,6 +902,27 @@ void read_diff_data_from_file(char *filename, DIFF_DATA *diff)
         fprintf(stderr, "Unable to allocate memory for diffusion voxel storage.\n");
         exit(1);
     }
+}
+
+void read_dir300_from_file(char* filename, DIFF_DATA *diff)
+{
+    float *dir300_array = malloc(sizeof(float) * 900);
+    if (dir300_array == NULL)
+    {
+        fprintf(stderr, "Unable to allocate memory for gradient table.\n");
+        exit(1);
+    }
+    
+    int n_dir300 = read_acsii_file_to_float_array(filename, dir300_array,
+                                                  900);
+    
+    if (n_dir300 != 900)
+    {
+        fprintf(stderr, "Something's wrong with the dir300: expceted: %d read: %d\n", 300, n_dir300);
+        exit(1);
+    }
+    
+    diff->dir300 = dir300_array;
 }
 
 /*****************************************************************************

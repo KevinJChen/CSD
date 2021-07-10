@@ -322,7 +322,7 @@ float multProd (int len, float * row, float * col)
 }
 
 /* returns minor matrix */
-matrix minor(matrix mat1)
+matrix minorM(matrix mat1)
 {
     matrix matco = makeMat(mat1.row, mat1.col);
     
@@ -349,7 +349,7 @@ matrix minor(matrix mat1)
 /* returns cofactor matrix */
 matrix cofactor(matrix mat1)
 {
-    matrix matmin = minor(mat1);
+    matrix matmin = minorM(mat1);
     int mult1 = -1;
     int mult2 = 1;
     for (int i = 0; i < mat1.row; i++)

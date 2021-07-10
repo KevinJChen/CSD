@@ -41,7 +41,7 @@ matrix findMat(matrix mat1, matrix mat2);
 
 /* helper */
 float multProd (int len, float * row, float * col);
-matrix minor(matrix mat1);
+matrix minorM(matrix mat1);
 matrix cofactor(matrix mat1);
 matrix adjugate(matrix mat1);
 

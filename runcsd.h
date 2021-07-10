@@ -43,6 +43,7 @@ typedef struct DIFF_DATA {
     int n_volumes;
     float *bvals;
     float *bvecs;
+    float *dir300;
     SYMMAT33 **b_matrices;
     int *b_high_ind;
     int *b_low_ind;
@@ -77,6 +78,7 @@ typedef struct MOW_RECON {
     char *bval_filename;
     char *bvec_filename;
     char *S0_filename;
+    char *dir300_filename;
     char *datadir;
     int S0compute;
     int log_bad_voxels;
@@ -102,6 +104,7 @@ ICOS_TESS *load_tess_from_file(const char *tess_file);
 void read_bvals_from_file(char *filename, DIFF_DATA *diff);
 void read_bvecs_from_file(char *filename, DIFF_DATA *diff);
 void read_diff_data_from_file(char *filename, DIFF_DATA *diff);
+void read_dir300_from_file(char* filename, DIFF_DATA *diff);
 int read_acsii_file_to_float_array(char *filename, float *data, int data_size);
 int save_output (const char *basedir, OUTPUT_DATA *output);
 

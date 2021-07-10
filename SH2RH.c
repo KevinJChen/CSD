@@ -270,14 +270,70 @@ matrix eval_ALP(int l, float el[], size_t size)
 }
 
 
-float* amp2SH(float* S, size_t size)
+matrix amp2SH(float* S, size_t size)
 {
-    float* SH = malloc(sizeof(float)*size);
+    // float* SH = malloc(sizeof(float)*size);
     
     matrix mS = assignMat(size, 1, S);
     matrix mI = mpinverseMat(mS);
     
-    return multiplyMat(mI, mS);
+    matrix SH = multiplyMat(mI, mS);
+    
+    return SH;
+}
+
+float * dir3002SH(float * dir300, size_t size)
+{
+    /* square everything */
+    for (int i = 0; i < size; i++)
+    {
+        float temp = dir300[i] * dir300[i];
+        dir300[i] = temp;
+    }
+    
+    
+    float * n = malloc(sizeof(float) * size);
+    
+    /* sum of rows */
+    int counter = 0;
+    for (int i = 0; i < size; i=i+3)
+    {
+    
+        n[counter] = dir300[i] + dir300[i+1] + dir300[i+2];
+        counter++;
+    }
+    
+    
+    int k_size = 0;
+    /* square root */
+    for (int i = 0; i < size/3; i++)
+    {
+        n[i] = sqrt(n[i]);
+        if (n[i] != 0)
+        {
+            k_size++;
+        }
+    }
+    if (k_size != size/3)
+    {
+        printf("zero elements found");
+    }
+    
+    counter = 0;
+    for (int i = size/3; i < size/3*2; i++)
+    {
+        n[i] = n[counter];
+        n[i+size/3] = n[counter];
+    }
+    
+    /* dir300 ./ n (element-wise division) */
+    float *SH = malloc(sizeof(float) * size);
+    
+    
+    
+    return n;
+
+
 }
 
 

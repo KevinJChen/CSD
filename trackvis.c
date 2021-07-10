@@ -194,8 +194,9 @@ int tv_read_next_track(tv_file *tvf, tv_track *tvt)
                 trksize); 
     } else if (trksize > kTV_POINT_BUFSIZE) {
 	fpos = ftell(tvf->tv_fp);
-        fprintf(stderr, "Error: track too large for buffer (track_size = %d, fpod = %ld).\n",
-                trksize, fpos);
+        fprintf(stderr, "Error: track too large for buffer ...");
+//        fprintf(stderr, "Error: track too large for buffer (track_size = %d, fpod = %ld).\n",
+//                trksize, fpos);
         return 0;
     }
     

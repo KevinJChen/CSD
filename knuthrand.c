@@ -114,7 +114,7 @@ double ranf_arr_next() {
 
 #undef KK
 #undef LL
-#undef mod_sum(x,y)
+// #undef mod_sum(x,y)
 #undef QUALITY
 #undef TT
-#undef is_odd(x)
+// #undef is_odd(x)

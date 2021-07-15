@@ -284,6 +284,16 @@ matrix amp2SH(float* S, size_t size)
 
 float * dir3002SH(float * dir300, size_t size)
 {
+    
+    int lmax = 8;
+    
+    /* copy of dir300 */
+    float * cdir300 = malloc(sizeof(float) * size);
+    for (int i = 0; i < size; i++)
+    {
+        cdir300[i] = dir300[i];
+    }
+    
     /* square everything */
     for (int i = 0; i < size; i++)
     {
@@ -326,12 +336,46 @@ float * dir3002SH(float * dir300, size_t size)
         n[i+size/3] = n[counter];
     }
     
-    /* dir300 ./ n (element-wise division) */
-    float *SH = malloc(sizeof(float) * size);
+    /* cdir300 ./ n (element-wise division) */
+    float *P = malloc(sizeof(float) * size);
+    for (int i = 0; i < size; i++)
+    {
+        P[i] = cdir300[i] / n[i];
+    }
+    
+    /* cartesian to spherical */
+    for (int i = 0; i < size; i=i+3)
+    {
+        float x = P[i];
+        float y = P[i+1];
+        float z = P[i+2];
+
+        P[i] = atan2(sqrt(x*x + y*y), z);
+        P[i+1] = atan2(y, x);
+        P[i+2] = sqrt(x*x + y*y + z*z);
+    }
+    
+    float *el = malloc(sizeof(float) * size/3);
+    for (int i = 0; i < size; i=i+3)
+    {
+        el[i] = P[i];
+    }
+    float *daz = malloc(sizeof(float) * size/3);
+    for (int i = 1; i < size; i=i+3)
+    {
+        daz[i] = P[i];
+    }
+    matrix az = assignMat(size/3, 1, daz);
     
     
-    
-    return n;
+    for (int i = 0; i < lmax; i=i+2)
+    {
+        matrix add_temp = eval_SH(i, el, size/3, az);
+    }
+    matrix add_temp = eval_SH(0, el, size/3, az);
+    printMat(add_temp);
+
+    return P;
 
 
 }

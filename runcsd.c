@@ -7,6 +7,16 @@
  */
 
 // #include "../../TrackTools_GUI/tt_current_version.h"
+
+
+/*
+ 
+ gcc csd.c knuthrand.c legendre.c lssq.c matrices.c matrix.c nifti1_io.c nnls.c qr_solve.c r8lib.c runcsd.c SH2RH.c track_track.c trackvis.c znzlib.c -o csd
+
+ ./csd -data ../data/data.nii -mask ../data/data_brain_mask.nii -bvec ../data/bvec.txt -bval ../data/bval.txt -dir300 ../data/dir300.txt
+
+ 
+ */
 #include "runcsd.h"
 #include "nnls.h"
 #include "lssq.h"
@@ -37,10 +47,10 @@ int main(int argc, char**argv)
     char *strbuf = malloc(sizeof(char)*strlen(mow.datadir) + 15);
     
     fprintf(stderr, "Loading spherical domains...\n");
-    sprintf(strbuf, "%s%c%s", mow.datadir, DIRSEP, "tess_L1.dat");
+    sprintf(strbuf, "%s%c%s", mow.datadir, DIRSEP, "../data/tess_L1.dat");
     ICOS_TESS *restart_tess = load_tess_from_file(strbuf);
     
-    sprintf(strbuf, "%s%c%s", mow.datadir, DIRSEP, "tess_L3.dat");
+    sprintf(strbuf, "%s%c%s", mow.datadir, DIRSEP, "../data/tess_L3.dat");
     ICOS_TESS *reco_tess    = load_tess_from_file(strbuf);
     if (reco_tess == NULL || restart_tess == NULL) {
         fprintf(stderr, "Spherical tessellation files could not be loaded.\n");
@@ -89,11 +99,11 @@ int main(int argc, char**argv)
     dSH = dir3002SH(dir300, 900);
     
     
-    for (int i = 0; i < 900; i++)
-    {
-        printf("dSH[%d] = %f\n", i, dSH[i]);
-    }
-    
+//    for (int i = 0; i < 900; i++)
+//    {
+//        printf("dSH[%d] = %f\n", i, dSH[i]);
+//    }
+//    
     
     
     

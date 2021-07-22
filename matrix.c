@@ -6,8 +6,6 @@
 //  Copyright © 2020 Kevin Chen. All rights reserved.
 //
 
-// https://stackoverflow.com/questions/5201708/how-to-return-a-2d-array-from-a-function-in-c
-
 #include "matrix.h"
 
 
@@ -303,6 +301,34 @@ matrix findMat(matrix mat1, matrix mat2)
     
     return m;
 }
+
+/* conjoin matrices (side by side) */
+matrix conjoinMat(matrix mat1, matrix mat2)
+{
+    if (mat1.row != mat2.row)
+    {
+        printf("ERROR: The matrices do not have the same number of rows");
+    }
+    float* dmat3 = malloc(sizeof(float) * mat1.row * (mat1.col+mat2.col));
+    
+    int counter = 0;
+    for (int i = 0; i < mat1.row; i++)
+    {
+        for (int j = 0; j < mat1.col; j++)
+        {
+            dmat3[counter] = mat1.data[i*mat1.col+j];
+            counter++;
+        }
+        for (int k = 0; k < mat2.col; k++)
+        {
+            dmat3[counter] = mat2.data[i*mat2.col+k];
+            counter++;
+        }
+    }
+    matrix mat3 = assignMat(mat1.row, mat1.col+mat2.col, dmat3);
+    return mat3;
+}
+
 
 /*
     

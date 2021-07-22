@@ -88,31 +88,31 @@ int main(int argc, char**argv)
     printf("Allocating memory...\n");
     
     
-    /* bvec list - split diff.n_volumes*3 */
-    // float *bvec = diff.bvecs;
     
-    /* dir300 */
+    
+    /*
+     
+     bvec -> DW_SH
+     
+     */
+    
+    /* bvec list - split diff.n_volumes*3 */
+    /* column1 ... column2 ... column3 */
+    float *bvec = diff.bvecs;
+    matrix DW_SH = bvec2SH(bvec, diff.n_volumes*3);
+    // printMat(DW_SH);
+    
+    /*
+     
+     dir300  -> HR_SH
+     
+     */
     float *dir300 = malloc(sizeof(float)*900);
     float *dSH = malloc(sizeof(float)*300);
     
     dir300 = diff.dir300;
-    dSH = dir3002SH(dir300, 900);
-    
-    
-//    for (int i = 0; i < 900; i++)
-//    {
-//        printf("dSH[%d] = %f\n", i, dSH[i]);
-//    }
-//    
-    
-    
-    
-    
-    /* DW_SH */
+    matrix HR_SH = dir3002SH(dir300, 900);
 
-    
-    /* HR_SH */
-    
     /* RH */
     // float* RH = malloc(sizeof(float)*n);
     // SH2RH(

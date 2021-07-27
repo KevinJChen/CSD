@@ -100,7 +100,7 @@ int main(int argc, char**argv)
     /* column1 ... column2 ... column3 */
     float *bvec = diff.bvecs;
     matrix DW_SH = bvec2SH(bvec, diff.n_volumes*3);
-    // printMat(DW_SH);
+    printMat(DW_SH);
     
     /*
      
@@ -215,7 +215,7 @@ int main(int argc, char**argv)
     
     /* free memory */
     free(dir300);
-    //free(dSH);
+    free(dSH);
     free(CSD_image);
     
     return 0;

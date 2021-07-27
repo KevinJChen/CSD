@@ -330,12 +330,14 @@ matrix dir3002SH(float * dir300, size_t size)
         printf("zero elements found\n");
     }
     
+    
     counter = 0;
     for (int i = size/3; i < size/3*2; i++)
     {
         n[i] = n[counter];
         n[i+size/3] = n[counter];
     }
+    
     
     /* cdir300 ./ n (element-wise division) */
     float *P = malloc(sizeof(float) * size);
@@ -403,14 +405,17 @@ matrix bvec2SH(float* bvec, size_t size)
     for (int i = 0; i < size/3; i++)
     {
         n[i] = bvec[i] + bvec[i+size/3] + bvec[i+size/3*2];
-        printf("n[%d]: %f\n", i, n[i]);
+        // printf("n[%d]: %f\n", i, n[i]);
     }
 
     int k_size = 0;
     /* square root */
     for (int i = 0; i < size/3; i++)
     {
-        n[i] = sqrt(n[i]);
+        float temp = sqrt(n[i]);
+        n[i] = temp;
+        n[i+size/3] = temp;
+        n[i+size/3*2] = temp;
         if (n[i] != 0)
         {
             k_size++;
@@ -418,29 +423,58 @@ matrix bvec2SH(float* bvec, size_t size)
     }
     if (k_size != size/3)
     {
-        printf("zero elements found\n");
+        printf("zero elements found: bvec\n");
+        printf("original size = %zu, nonzero size = %d\n", size, k_size);
     }
     
-    int counter = 0;
-    for (int i = size/3; i < size/3*2; i++)
-    {
-        n[i] = n[counter];
-        n[i+size/3] = n[counter];
-    }
+    /* */
+
     
     /* cbvec ./ n (element-wise division) */
-    float *P = malloc(sizeof(float) * size);
+    float *P = malloc(sizeof(float) * k_size*3);
+    int counter = 0;
     for (int i = 0; i < size; i++)
     {
-        P[i] = cbvec[i] / n[i];
+        if (cbvec[i] == 0 && n[i] == 0)
+        {
+            continue;
+        }
+        P[counter] = cbvec[i] / n[i];
+        counter++;
     }
     
     /* cartesian to spherical */
+    for (int i = 0; i < k_size; i++)
+    {
+        float x = P[i];
+        float y = P[i+k_size];
+        float z = P[i+k_size*2];
+        
+        P[i] = atan2(sqrt(x*x + y*y), z);
+        P[i+k_size] = atan2(y, x);
+        P[i+k_size*2] = sqrt(x*x + y*y + z*z);
+    }
     
+    float *el = malloc(sizeof(float) * k_size);
+    for (int i = 0; i < k_size; i++)
+    {
+        el[i] = P[i];
+    }
+    float *daz = malloc(sizeof(float) * k_size);
+    for (int i = k_size; i < k_size*2; i++)
+    {
+        daz[i-k_size] = P[i];
+    }
+    matrix az = assignMat(k_size, 1, daz);
     
-    matrix nMat = assignMat(size/3, 1, n);
+    matrix SH = transposeMat(eval_SH(0, el, k_size, az));
+    for (int i = 2; i < lmax+1; i=i+2)
+    {
+        matrix add_temp = transposeMat(eval_SH(i, el, k_size, az));
+        SH = conjoinMat(SH, add_temp);
+    }
     
-    return nMat;
+    return SH;
     
 }
 

@@ -896,7 +896,7 @@ typedef struct { unsigned char r,g,b; } rgb_byte ;
        - dim[1] = number of triangles
        - dim[2] = dim[3] = dim[4] = 1
        - dim[5] = 3
-       - datatype should be an integer type (preferably DT_INT32)
+       - datatype should be an integer type (preferably DT_INT)
        - the data values are indexes (0,1,...) into a pointset dataset. */
 
 #define NIFTI_INTENT_TRIANGLE  1009

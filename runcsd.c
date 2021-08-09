@@ -86,9 +86,7 @@ int main(int argc, char**argv)
     }
     
     printf("Allocating memory...\n");
-    
-    
-    
+
     
     /*
      
@@ -100,7 +98,6 @@ int main(int argc, char**argv)
     /* column1 ... column2 ... column3 */
     float *bvec = diff.bvecs;
     matrix DW_SH = bvec2SH(bvec, diff.n_volumes*3);
-    printMat(DW_SH);
     
     /*
      
@@ -129,45 +126,60 @@ int main(int argc, char**argv)
     
     fprintf(stderr, "Starting CSD reconstruction...\n");
     
-//    long unsigned int count = 0;
-//    for (int vz=0; vz < diff.nii_image->nz; vz++)
-//    {
-//        for (int vy=0; vy < diff.nii_image->ny; vy++)
-//        {
-//            for (int vx=0; vx < diff.nii_image->nx; vx++)
-//            {
-//
-//                int n_maxima = 0;
-//
-//                MAXIMA* max_list = malloc(sizeof(MAXIMA)*mow.reco_tess->num_vertices);
-//                int load_ok = load_voxel_double_highb(&diff, vx, vy, vz);
-//                if (-1 == load_ok)
-//                {
-//                    if (mow.log_bad_voxels != 0)
-//                    {
-//                        fprintf(stderr, " WARNING: Voxel [%d, %d, %d] was not reconstructed (S0=0).\n", vx, vy, vz);
-//                    }
-//                    continue;
-//                } else if (-2 == load_ok)
-//                {
-//                    if (mow.log_bad_voxels != 0)
-//                    {
-//                        fprintf(stderr, " WARNING: Voxel [%d, %d, %d] was not reconstructed (nan/inf).\n", vx, vy, vz);
-//                    }
-//                    continue;
-//                } else if (0 == load_ok)
-//                {
-//                    // Mask hit
-//                    count++;
-//                    continue;
-//                }
-//
-//                /* diff-weighted data */
-//                double* e = diff.single_voxel_storage;
-//
+    printf("nx: %d\n", diff.nii_image->nx);
+    printf("ny: %d\n", diff.nii_image->ny);
+    printf("nz: %d\n", diff.nii_image->nz);
+    
+    long unsigned int count = 0;
+    for (int vz=0; vz < diff.nii_image->nz; vz++)
+    {
+        for (int vy=0; vy < diff.nii_image->ny; vy++)
+        {
+            for (int vx=0; vx < diff.nii_image->nx; vx++)
+            {
+
+                int n_maxima = 0;
+
+                MAXIMA* max_list = malloc(sizeof(MAXIMA)*mow.reco_tess->num_vertices);
+                
+                int load_ok = load_voxel_double_highb(&diff, vx, vy, vz);
+
+                if (-1 == load_ok)
+                {
+                    if (mow.log_bad_voxels != 0)
+                    {
+                        fprintf(stderr, " WARNING: Voxel [%d, %d, %d] was not reconstructed (S0=0).\n", vx, vy, vz);
+                    }
+                    continue;
+                } else if (-2 == load_ok)
+                {
+                    if (mow.log_bad_voxels != 0)
+                    {
+                        fprintf(stderr, " WARNING: Voxel [%d, %d, %d] was not reconstructed (nan/inf).\n", vx, vy, vz);
+                    }
+                    continue;
+                } else if (0 == load_ok)
+                {
+                    // Mask hit
+                    count++;
+                    continue;
+                }
+
+                /* diff-weighted data */
+                double* e = diff.single_voxel_storage;
+                
+                float* ef = malloc(sizeof(float) * diff.n_volumes);
+                for (int i = 0; i < diff.n_volumes; i++)
+                {
+                    ef[i] = e[i];
+                }
+                matrix me = assignMat(134, 1, ef);
+                
+
 //
 //                /* CSD thing here */
 //
+                
 //
 //                n_maxima = find_local_maxima(reco_tess, coef, mow.prob_thresh, restart_tess, maxima_list);
 //
@@ -177,13 +189,13 @@ int main(int argc, char**argv)
 //
 //                /* reset coef to 0 for next run */
 //                memset(coef, 0, n_reco_dirs*sizeof(double));
-//
-//            }
-//        }
-//        fprintf(stderr, "Slice: %d of %d Complete.\n", vz, diff.nii_image->nz);
-//        fflush(stderr);
-//    }
-//
+
+            }
+        }
+        fprintf(stderr, "Slice: %d of %d Complete.\n", vz, diff.nii_image->nz);
+        fflush(stderr);
+    }
+
 //    if (mow.S0compute == 1)
 //    {
 //
@@ -207,10 +219,10 @@ int main(int argc, char**argv)
 //        znzFile fp = znzopen(mow.S0_filename, "wb", 0);
 //        nifti_image_write_hdr_img2(S0_nim, 1, "wb", fp, NULL);
 //    }
-//
-//    fprintf(stderr, "CSD Reconstruction complete... saving output...\n");
+
+    fprintf(stderr, "CSD Reconstruction complete... saving output...\n");
 //    save_output(mow.output_directory, output);
-//
+
     fprintf(stderr, "Done.\n");
     
     /* free memory */
@@ -407,6 +419,7 @@ void mow_initialize_opts(MOW_RECON *mow, int argc, char **argv)
     mow->diff->delta_sm   = (double) DELTA_SM;
     mow->data_filename    = NULL;
     mow->bval_filename    = NULL;
+    mow->dir300_filename  = NULL;
     mow->bvec_filename    = NULL;
     mow->mask_filename    = NULL;
     mow->S0_filename      = NULL;
@@ -567,10 +580,6 @@ void mow_initialize_opts(MOW_RECON *mow, int argc, char **argv)
         fprintf(stderr, "The -bvec <path> option is required to specify the location\n");
         fprintf(stderr, "of the gradient directions for this data set.\n");
         exit(1);
-    } else if (mow->dir300_filename == NULL)
-    {
-        fprintf(stderr, "The -dir300 <path> option is required to specify the location\n");
-        fprintf(stderr, "of the dir300.");
     }
     
     /* these functions call exit() if anything bad happens. */
@@ -580,7 +589,8 @@ void mow_initialize_opts(MOW_RECON *mow, int argc, char **argv)
     read_bvals_from_file(    mow->bval_filename, mow->diff);
     fprintf(stderr, "Loading gradient vectors...\n");
     read_bvecs_from_file(    mow->bvec_filename, mow->diff);
-    fprintf(stderr, "Loading dir300...\n");
+    //fprintf(stderr, "Loading dir300...\n");
+    mow->dir300_filename = "../data/dir300.txt";
     read_dir300_from_file( mow->dir300_filename, mow->diff);
     
     fprintf(stderr, "Loading binary mask...\n");
@@ -1549,7 +1559,6 @@ void replace_realsmall_w_zeros(double *input, int size, double tol)
  *****************************************************************************/
 
 int load_voxel_double_highb(DIFF_DATA *diff, int x, int y, int z) {
-    
     int index = nii_voxel3_index(diff->nii_image, x, y, z);
     int i;
     double *data = diff->single_voxel_storage;
@@ -1650,12 +1659,14 @@ double read_nii_voxel_anytype(void *src, int index, int datatype)
         dest = (double) ( (unsigned char *)(src))[index];
         break;
     case DT_INT8:
+        
         dest = (double) (          (char *)(src))[index];
         break;
     case DT_UINT16:
         dest = (double) ((unsigned short *)(src))[index];
         break;
     case DT_INT16:
+        
         dest = (double) (         (short *)(src))[index];
         break;
     case DT_UINT32:
@@ -1671,6 +1682,8 @@ double read_nii_voxel_anytype(void *src, int index, int datatype)
         dest = (                 (double *)(src))[index];
         break;
     default:
+            
+            ;
         fprintf(stderr, "Nifti datatype not supported: %s\n",
             nifti_datatype_string(datatype));
     }

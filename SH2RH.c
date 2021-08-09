@@ -421,11 +421,7 @@ matrix bvec2SH(float* bvec, size_t size)
             k_size++;
         }
     }
-    if (k_size != size/3)
-    {
-        printf("zero elements found: bvec\n");
-        printf("original size = %zu, nonzero size = %d\n", size, k_size);
-    }
+//
     
     /* */
 

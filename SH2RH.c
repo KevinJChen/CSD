@@ -469,7 +469,6 @@ matrix bvec2SH(float* bvec, size_t size)
         matrix add_temp = transposeMat(eval_SH(i, el, k_size, az));
         SH = conjoinMat(SH, add_temp);
     }
-    
     return SH;
     
 }

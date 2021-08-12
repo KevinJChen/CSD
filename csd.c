@@ -43,7 +43,6 @@ matrix csdeconv(float* R_RH, matrix DW_SH, matrix HR_SH, matrix S, float lambda,
         }
     }
     
-    
     if (DW_SH.col != s)
     {
         printf("SH.col is NOT equal to R_RH");
@@ -61,13 +60,11 @@ matrix csdeconv(float* R_RH, matrix DW_SH, matrix HR_SH, matrix S, float lambda,
     }
     matrix rfconv = assignMat(DW_SH.row, DW_SH.col, dfconv);
     matrix fconv = eleMultiplyMat(DW_SH, rfconv);
-
+    
     
     // generate initial FOD estimate
     // truncated at lmax = 4
-    
-    float *dF_SH = malloc(DW_SH.row*nSH_for_lmax(4)*sizeof(float));
-    double* dF_SH1 = malloc(DW_SH.row * nSH_for_lmax(4) * sizeof(double));
+    double* dF_SH1 = malloc(DW_SH.row * nSH_for_lmax(4)*sizeof(double));
     double* dS1 = malloc(DW_SH.row*sizeof(double));
     
     counter = 0;
@@ -75,11 +72,23 @@ matrix csdeconv(float* R_RH, matrix DW_SH, matrix HR_SH, matrix S, float lambda,
     {
         for (int j = 0; j < nSH_for_lmax(4); j++)
         {
-            dF_SH[counter] = fconv.data[counter];
-            dF_SH1[counter] = fconv.data[counter];
+            dF_SH1[counter] = fconv.data[i * DW_SH.col + j];
             counter++;
         }
     }
+    for (int i = 0; i < S.row; i++)
+    {
+        dS1[i] = S.data[i];
+    }
+    
+    double A[] = {1, 2, 0, 0, 4, 3};
+    double B[] = {8, 18};
+    double *AB = malloc(sizeof(double) * 3);
+    AB = qr_solve(2, 3, A, B);
+    printf("AB[0]: %f\n", AB[0]);
+    printf("AB[1]: %f\n", AB[1]);
+    printf("AB[2]: %f\n", AB[2]);
+    
     
     double*dF_SH2 = malloc(nSH_for_lmax(4) * sizeof(double));
     dF_SH2 = qr_solve(DW_SH.row, nSH_for_lmax(4), dF_SH1, dS1);
@@ -87,12 +96,20 @@ matrix csdeconv(float* R_RH, matrix DW_SH, matrix HR_SH, matrix S, float lambda,
     for (int i = 0; i < nSH_for_lmax(4); i++)
     {
         dataF_SH[i] = dF_SH2[i];
+        // printf("dataF_SH[%d]: %f\n", i, dataF_SH[i]);
     }
+    
+    
+    
     for (int i = nSH_for_lmax(4); i < HR_SH.col; i++)
     {
         dataF_SH[i] = 0;
     }
     matrix F_SH = assignMat(HR_SH.col, 1, dataF_SH);
+    
+
+    
+    
     
     
     // set threshold on FOD amplitude used to identify 'negative' values:
@@ -117,8 +134,8 @@ matrix csdeconv(float* R_RH, matrix DW_SH, matrix HR_SH, matrix S, float lambda,
         {
             if (j >= fconv.col)
             {
-                printf("HERERERASDLKF\n");
-                printf("%d\n", fconv.col);
+                //printf("HERERERASDLKF\n");
+                //printf("%d\n", fconv.col);
                 // ndfconv[i*HR_SH.col+j] = 0;
             }
             else

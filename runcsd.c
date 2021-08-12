@@ -32,8 +32,12 @@
 int main(int argc, char**argv)
 {
     MOW_RECON mow;
+    
     DIFF_DATA diff;
     mow.diff = &diff;
+    
+    DIFF_DATA cc;
+    mow.cc = &cc;
     
     mow_initialize_opts(&mow, argc, argv);
     
@@ -109,12 +113,6 @@ int main(int argc, char**argv)
     
     dir300 = diff.dir300;
     matrix HR_SH = dir3002SH(dir300, 900);
-
-    /* RH */
-    // float* RH = malloc(sizeof(float)*n);
-    // SH2RH(
-    
-    /* S */
     
     /* lambda */
     float lambda = 1;
@@ -122,13 +120,156 @@ int main(int argc, char**argv)
     /* tau */
     float tau = 0.1;
     
+    float* R_RH = malloc(sizeof(float) * 9);
+    R_RH[0] = 2.272755743780587;
+    R_RH[1] = -0.737893702664521;
+    R_RH[2] = 0.234271066072850;
+    R_RH[3] = -0.060172696866426;
+    R_RH[4] = 0.012665230663513;
+    R_RH[5] = -0.002240638653198;
+    R_RH[6] = 0.0003407179468533424;
+    R_RH[7] = -0.00004535450890313039;
+    R_RH[8] = 0.000005359911166996324;
+    
+    float S_noise[] = {0.0610494559931011,
+        0.496680281795476,
+        0.795735317068993,
+        0.479495526516407,
+        0.368450554281307,
+        0.0287163886273466,
+        0.211163483857890,
+        0.401140315113653,
+        0.0873778623941809,
+        0.537436885803709,
+        0.628000006966432,
+        0.564793118437954,
+        0.178692344959356,
+        0.467877183912947,
+        0.453597950262763,
+        0.0332004686974812,
+        0.0547896294150713,
+        0.685774475713191,
+        0.576940522836236,
+        0.402318905471547,
+        0.163492960589470,
+        0.344212356903253,
+        0.189544232903552,
+        0.499210723057296,
+        0.773179863646666,
+        0.483684856899905,
+        0.434099275942526,
+        0.731059305573494,
+        0.488093920746561,
+        0.0402174704910433,
+        0.529004059561977,
+        0.389569101952704,
+        0.696293712074344,
+        0.347594913292252,
+        0.0283242024742241,
+        0.0993303312829034,
+        0.492288626437576,
+        0.400847112513152,
+        0.158339258972739,
+        0.108158670163543,
+        0.0700667455824719,
+        0.417831500083708,
+        0.219490558042615,
+        0.709608001470193,
+        0.484708687818407,
+        0.506696927396508,
+        0.128046307321534,
+        0.239675489747712,
+        0.499988085197548,
+        0.568236365864018,
+        0.0595041627102349,
+        0.205045027052130,
+        0.230976527842754,
+        0.738425290711995,
+        0.427835863329264,
+        0.455107181913723,
+        0.0687083875944151,
+        0.334873029397327,
+        0.647545333254982,
+        0.475384714669345,
+        0.278382439057538,
+        0.650115317893119,
+        0.0808028925773963,
+        0.336431504034009,
+        0.0606732438964266,
+        0.497050054913687,
+        0.796202980805748,
+        0.479656028075589,
+        0.368427022509875,
+        0.0287937416548440,
+        0.211041317037966,
+        0.401525385681761,
+        0.0871350224894512,
+        0.537849234749425,
+        0.628572864554498,
+        0.564182360370116,
+        0.178701579604914,
+        0.467660915023897,
+        0.453305762943060,
+        0.0330875014569461,
+        0.0551686695249128,
+        0.685895789886951,
+        0.577560673007397,
+        0.401553434699100,
+        0.163605074382051,
+        0.343509703324881,
+        0.188782764169278,
+        0.499319872481533,
+        0.773623120229887,
+        0.483896550698466,
+        0.433508076007523,
+        0.731333219479100,
+        0.488271000495480,
+        0.0404697482499159,
+        0.529067323847210,
+        0.389775919324409,
+        0.696248979790625,
+        0.348158015432719,
+        0.0284156101863661,
+        0.0989488312533683,
+        0.492717655197124,
+        0.400267753008906,
+        0.159141326697554,
+        0.108714767083804,
+        0.0698785598726038,
+        0.417926931709072,
+        0.219144441124763,
+        0.710240108782924,
+        0.484922116822372,
+        0.506983517077875,
+        0.127752899794392,
+        0.238895788654764,
+        0.500607146752334,
+        0.568829584082916,
+        0.0594059949855426,
+        0.204998970821519,
+        0.231520034233081,
+        0.738747701832043,
+        0.428425606186354,
+        0.455128706207535,
+        0.0689616762915654,
+        0.334471506197017,
+        0.648166084678944,
+        0.475333059974689,
+        0.279485189376500,
+        0.650759683928870,
+        0.0811798399574013,
+        0.336572467855975};
+    
+    matrix SS = assignMat(128, 1, S_noise);
+    matrix test = csdeconv(R_RH, DW_SH, HR_SH, SS, lambda, tau);
+    
+    // printMat(test);
+    // printf("rows: %d\n", test.row);
+    // printf("cols: %d\n", test.col);
+    
     float* CSD_image = malloc(sizeof(float) * diff.nii_image->nz * diff.nii_image->ny * diff.nii_image->nx);
     
     fprintf(stderr, "Starting CSD reconstruction...\n");
-    
-    printf("nx: %d\n", diff.nii_image->nx);
-    printf("ny: %d\n", diff.nii_image->ny);
-    printf("nz: %d\n", diff.nii_image->nz);
     
     long unsigned int count = 0;
     for (int vz=0; vz < diff.nii_image->nz; vz++)
@@ -164,19 +305,33 @@ int main(int argc, char**argv)
                     count++;
                     continue;
                 }
-
-                /* diff-weighted data */
+            
+                /* diff-weighted data (S) - spherical harmonics */
                 double* e = diff.single_voxel_storage;
-                
-                float* ef = malloc(sizeof(float) * diff.n_volumes);
+                // printf("e: %f\n", e[60]);
+                float* dS = malloc(sizeof(float) * diff.n_volumes);
                 for (int i = 0; i < diff.n_volumes; i++)
                 {
-                    ef[i] = e[i];
+                    dS[i] = e[i];
+                    //printf("dS[%d]: %f, ", i, dS[i]);
                 }
-                matrix me = assignMat(134, 1, ef);
+                //printf("\n");
+                matrix S = assignMat(diff.n_volumes, 1, dS);
                 
-
-//
+                /* mask data (RH) - rotational harmonics */
+                double* c = cc.single_voxel_storage;
+                float* dRH = malloc(sizeof(float) * cc.n_volumes);
+                for (int i = 0; i < cc.n_volumes; i++)
+                {
+                    if (c[i] != 0)
+                    {
+                        // printf("%f\n", c[i]);
+                    }
+                    dRH[i] = c[i];
+                }
+                
+                // matrix m_csd = csdeconv(dRH, DW_SH, HR_SH, S, lambda, tau);
+    
 //                /* CSD thing here */
 //
                 
@@ -192,7 +347,7 @@ int main(int argc, char**argv)
 
             }
         }
-        fprintf(stderr, "Slice: %d of %d Complete.\n", vz, diff.nii_image->nz);
+        // fprintf(stderr, "Slice: %d of %d Complete.\n", vz, diff.nii_image->nz);
         fflush(stderr);
     }
 
@@ -417,12 +572,15 @@ void mow_initialize_opts(MOW_RECON *mow, int argc, char **argv)
     mow->datadir          = ".";
     mow->diff->delta_lg   = (double) DELTA_LG;
     mow->diff->delta_sm   = (double) DELTA_SM;
+    mow->cc->delta_lg     = (double) DELTA_LG;
+    mow->cc->delta_sm     = (double) DELTA_SM;
     mow->data_filename    = NULL;
     mow->bval_filename    = NULL;
     mow->dir300_filename  = NULL;
     mow->bvec_filename    = NULL;
     mow->mask_filename    = NULL;
     mow->S0_filename      = NULL;
+    mow->cc_filename      = NULL;
     
     for (opt=1; opt<argc; opt++) {
         if (0 == strcmp(argv[opt], "-h")) {
@@ -539,6 +697,15 @@ void mow_initialize_opts(MOW_RECON *mow, int argc, char **argv)
             mow->dir300_filename = argv[opt+1];
             opt++;
             continue;
+        }
+        else if (0 == strcmp(argv[opt], "-cc")) {
+            if (opt+1 == argc || argv[opt+1][0] == '-') {
+                fprintf(stderr, "Error: -cc requires an argument.\n");
+                exit(1);
+            }
+            mow->cc_filename = argv[opt+1];
+            opt++;
+            continue;
         } else {
             fprintf(stderr, "Ignoring junk on command line: %s\n", argv[opt]);
             fprintf(stderr, "Use -h to see a list of options.\n");
@@ -581,15 +748,20 @@ void mow_initialize_opts(MOW_RECON *mow, int argc, char **argv)
         fprintf(stderr, "of the gradient directions for this data set.\n");
         exit(1);
     }
+    else if (mow->cc_filename == NULL)
+    {
+        fprintf(stderr, "The -cc <path> option is required.\n");
+        exit(1);
+    }
     
     /* these functions call exit() if anything bad happens. */
     fprintf(stderr, "Loading diffusion data...\n");
     read_diff_data_from_file(mow->data_filename, mow->diff);
+    read_diff_data_from_file(mow->data_filename, mow->cc);
     fprintf(stderr, "Loading bvalues...\n");
     read_bvals_from_file(    mow->bval_filename, mow->diff);
     fprintf(stderr, "Loading gradient vectors...\n");
     read_bvecs_from_file(    mow->bvec_filename, mow->diff);
-    //fprintf(stderr, "Loading dir300...\n");
     mow->dir300_filename = "../data/dir300.txt";
     read_dir300_from_file( mow->dir300_filename, mow->diff);
     
@@ -605,6 +777,18 @@ void mow_initialize_opts(MOW_RECON *mow, int argc, char **argv)
         nii_recast_to_int32(mow->diff->mask);
     }
     
+    fprintf(stderr, "Loading cc mask...\n");
+    mow->cc->mask = nifti_image_read(mow->cc_filename, 1);
+    if (mow->cc->mask == NULL)
+    {
+        fprintf(stderr, "Unable to load mask file %s\n", mow->cc_filename);
+        fprintf(stderr, "I will attempt to reconstruct ALL voxels, even those\n");
+        fprintf(stderr, "that may lie outside of the subject matter. Use results\n");
+        fprintf(stderr, "with caution\n\n");
+        //exit(1);
+    } else {
+        nii_recast_to_int32(mow->cc->mask);
+    }
 }
 
 /*****************************************************************************
@@ -923,6 +1107,7 @@ void read_diff_data_from_file(char *filename, DIFF_DATA *diff)
         exit(1);
     }
 }
+
 
 void read_dir300_from_file(char* filename, DIFF_DATA *diff)
 {

@@ -61,6 +61,7 @@ typedef struct ICOS_TESS {
 
 typedef struct MOW_RECON {
     DIFF_DATA *diff;
+    DIFF_DATA *cc;
     ICOS_TESS *reco_tess;
     ICOS_TESS *deco_tess;
     ICOS_TESS *restart_tess;
@@ -79,6 +80,7 @@ typedef struct MOW_RECON {
     char *bvec_filename;
     char *S0_filename;
     char *dir300_filename;
+    char *cc_filename;
     char *datadir;
     int S0compute;
     int log_bad_voxels;

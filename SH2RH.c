@@ -286,7 +286,7 @@ matrix dir3002SH(float * dir300, size_t size)
 {
     
     /* higher res SH */
-    int lmax = 12;
+    int lmax = 8;
     
     /* copy of dir300 */
     float * cdir300 = malloc(sizeof(float) * size);

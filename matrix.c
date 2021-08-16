@@ -279,21 +279,28 @@ matrix meanMat(matrix mat1)
     return mat2;
 }
 
-/* find where mat2 > mat1 */
-matrix findMat(matrix mat1, matrix mat2)
+/* find where mat2.data < threshold */
+matrix findMat(matrix mat1, float threshold)
 {
-    float* dm = malloc(mat1.row*mat1.col*sizeof(float));
-    int counter = 0;
+    // mat 1 should always have one column
     
-    for (int i = 0; i < mat1.col; i++)
+    int counter = 0;
+    for (int i = 0 ; i < mat1.row; i++)
     {
-        for (int j = 0; j < mat1.row; j++)
+        if (mat1.data[i] < threshold)
         {
-            if (mat2.data[j*mat1.col+i] > mat1.data[j*mat1.col+i])
-            {
-                dm[counter] = i*mat1.col+j + 1;
-                counter++;
-            }
+            counter++;
+        }
+    }
+    
+    int dcounter = 0;
+    float* dm = malloc(counter*sizeof(float));
+    for (int i = 0; i < mat1.row; i++)
+    {
+        if (mat1.data[i] < threshold)
+        {
+            dm[dcounter] = i;
+            dcounter++;
         }
     }
     

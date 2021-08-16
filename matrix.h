@@ -37,7 +37,7 @@ matrix cosMat(matrix mat1);
 matrix eleMultiplyMat(matrix mat1, matrix mat2);
 matrix rightDivideMat(matrix mat1, matrix mat2);
 matrix meanMat(matrix mat1);
-matrix findMat(matrix mat1, matrix mat2);
+matrix findMat(matrix mat1, float threshold);
 matrix conjoinMat(matrix mat1, matrix mat2);
 
 /* helper */

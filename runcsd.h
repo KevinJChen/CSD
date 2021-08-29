@@ -138,7 +138,7 @@ double *compute_reconstruction_weights(MOW_RECON *mow, int x, int y, int z);
 
 OUTPUT_DATA *initialize_output (nifti_image *template, int nbricks);
 void add_maxima_to_output(OUTPUT_DATA *output, int x, int y, int z,
-              float **vertlist, MAXIMA *maxima_list, int n_maxima);
+              double **vertlist, MAXIMA *maxima_list, int n_maxima);
 void replace_realsmall_w_zeros(double *input, int size, double tol);
 void __tokenize_line(char *line, const char *tokens, float *split, int *nsplit);
 int load_voxel_double_highb(DIFF_DATA *diff, int x, int y, int z);

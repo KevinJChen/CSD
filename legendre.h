@@ -15,7 +15,7 @@
 #include "matrix.h"
 #include "r8lib.h"
 
-matrix legendre(int order, double el[], int num_el);
+matrix* legendre(int order, double el[], int num_el, matrix* legend);
 
 char digit_to_ch ( int i );
 int i4_log_10 ( int i );

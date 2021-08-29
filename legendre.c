@@ -15,7 +15,7 @@
 #include "legendre.h"
 #include "r8lib.h"
 
-matrix legendre(int order, double el[], int num_el)
+matrix* legendre(int order, double el[], int num_el, matrix* legend)
 {
     
     float *leg = malloc((order+1)*num_el * sizeof(float));
@@ -31,8 +31,9 @@ matrix legendre(int order, double el[], int num_el)
     }
     
     float argtest[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-    matrix test = assignMat(order+1, num_el, leg);
-    return test;
+    assignMat(order+1, num_el, leg, legend);
+    free(argtest);
+    return legend;
 }
 
 /******************************************************************************/

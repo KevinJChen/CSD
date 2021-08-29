@@ -13,7 +13,7 @@
  
  gcc csd.c knuthrand.c legendre.c lssq.c matrices.c matrix.c nifti1_io.c nnls.c qr_solve.c r8lib.c runcsd.c SH2RH.c track_track.c trackvis.c znzlib.c -o csd
 
- ./csd -data ../data/data.nii -mask ../data/data_brain_mask.nii -bvec ../data/bvec.txt -bval ../data/bval.txt -dir300 ../data/dir300.txt
+ ./csd -data ../data/data.nii -bvec ../data/bvec.txt -bval ../data/bval.txt -S0 ../data/DTI_S0.nii -cc ../data/cc.nii -mask ../data/data_brain_mask.nii -odir ../output
 
  
  */
@@ -47,6 +47,9 @@ int main(int argc, char**argv)
     fprintf(stderr, "Initializing output data structures...\n");
     OUTPUT_DATA *output = initialize_output(diff.nii_image, mow.num_output_files);
     
+    int m = diff.n_b_high;
+    int k = 30;
+    
     /* Load the precomputed spherical domains */
     char *strbuf = malloc(sizeof(char)*strlen(mow.datadir) + 15);
     
@@ -68,13 +71,27 @@ int main(int argc, char**argv)
     mow.reco_tess = reco_tess;
     mow.restart_tess = restart_tess;
     
-    int m = diff.n_b_high;
     int n = mow.reco_tess->num_vertices;
+    // printf("mow.reco_tess->num_vertices: %d\n", n);
     int n_reco_dirs = n;
-    int k = 30;
+    
+    double** U = malloc(sizeof(double*)*3);
+    for (int i = 0; i < 3; i++)
+    {
+        U[i] = malloc(sizeof(double)*n);
+    }
+    for (int i = 0; i < n; i++)
+    {
+        U[0][i] = mow.reco_tess->vertices[i][0];
+        U[1][i] = mow.reco_tess->vertices[i][1];
+        U[2][i] = mow.reco_tess->vertices[i][2];
+    }
+    
+    fprintf(stderr, "Computing reconstruction matrix...\n");
     
     /* initialize the coefficient storage for a single voxel */
     double *coef = malloc(sizeof(double) * n_reco_dirs);
+    // printf("n_reco_dirs: %d\n", n_reco_dirs);
     if (coef == NULL)
     {
         fprintf(stderr, "Unable to allocate memory for maxima list.\n");
@@ -119,153 +136,6 @@ int main(int argc, char**argv)
     
     /* tau */
     float tau = 0.1;
-    
-    float* R_RH = malloc(sizeof(float) * 9);
-    R_RH[0] = 2.272755743780587;
-    R_RH[1] = -0.737893702664521;
-    R_RH[2] = 0.234271066072850;
-    R_RH[3] = -0.060172696866426;
-    R_RH[4] = 0.012665230663513;
-    R_RH[5] = -0.002240638653198;
-    R_RH[6] = 0.0003407179468533424;
-    R_RH[7] = -0.00004535450890313039;
-    R_RH[8] = 0.000005359911166996324;
-    
-    float S_noise[] = {0.0610494559931011,
-        0.496680281795476,
-        0.795735317068993,
-        0.479495526516407,
-        0.368450554281307,
-        0.0287163886273466,
-        0.211163483857890,
-        0.401140315113653,
-        0.0873778623941809,
-        0.537436885803709,
-        0.628000006966432,
-        0.564793118437954,
-        0.178692344959356,
-        0.467877183912947,
-        0.453597950262763,
-        0.0332004686974812,
-        0.0547896294150713,
-        0.685774475713191,
-        0.576940522836236,
-        0.402318905471547,
-        0.163492960589470,
-        0.344212356903253,
-        0.189544232903552,
-        0.499210723057296,
-        0.773179863646666,
-        0.483684856899905,
-        0.434099275942526,
-        0.731059305573494,
-        0.488093920746561,
-        0.0402174704910433,
-        0.529004059561977,
-        0.389569101952704,
-        0.696293712074344,
-        0.347594913292252,
-        0.0283242024742241,
-        0.0993303312829034,
-        0.492288626437576,
-        0.400847112513152,
-        0.158339258972739,
-        0.108158670163543,
-        0.0700667455824719,
-        0.417831500083708,
-        0.219490558042615,
-        0.709608001470193,
-        0.484708687818407,
-        0.506696927396508,
-        0.128046307321534,
-        0.239675489747712,
-        0.499988085197548,
-        0.568236365864018,
-        0.0595041627102349,
-        0.205045027052130,
-        0.230976527842754,
-        0.738425290711995,
-        0.427835863329264,
-        0.455107181913723,
-        0.0687083875944151,
-        0.334873029397327,
-        0.647545333254982,
-        0.475384714669345,
-        0.278382439057538,
-        0.650115317893119,
-        0.0808028925773963,
-        0.336431504034009,
-        0.0606732438964266,
-        0.497050054913687,
-        0.796202980805748,
-        0.479656028075589,
-        0.368427022509875,
-        0.0287937416548440,
-        0.211041317037966,
-        0.401525385681761,
-        0.0871350224894512,
-        0.537849234749425,
-        0.628572864554498,
-        0.564182360370116,
-        0.178701579604914,
-        0.467660915023897,
-        0.453305762943060,
-        0.0330875014569461,
-        0.0551686695249128,
-        0.685895789886951,
-        0.577560673007397,
-        0.401553434699100,
-        0.163605074382051,
-        0.343509703324881,
-        0.188782764169278,
-        0.499319872481533,
-        0.773623120229887,
-        0.483896550698466,
-        0.433508076007523,
-        0.731333219479100,
-        0.488271000495480,
-        0.0404697482499159,
-        0.529067323847210,
-        0.389775919324409,
-        0.696248979790625,
-        0.348158015432719,
-        0.0284156101863661,
-        0.0989488312533683,
-        0.492717655197124,
-        0.400267753008906,
-        0.159141326697554,
-        0.108714767083804,
-        0.0698785598726038,
-        0.417926931709072,
-        0.219144441124763,
-        0.710240108782924,
-        0.484922116822372,
-        0.506983517077875,
-        0.127752899794392,
-        0.238895788654764,
-        0.500607146752334,
-        0.568829584082916,
-        0.0594059949855426,
-        0.204998970821519,
-        0.231520034233081,
-        0.738747701832043,
-        0.428425606186354,
-        0.455128706207535,
-        0.0689616762915654,
-        0.334471506197017,
-        0.648166084678944,
-        0.475333059974689,
-        0.279485189376500,
-        0.650759683928870,
-        0.0811798399574013,
-        0.336572467855975};
-    
-    matrix SS = assignMat(128, 1, S_noise);
-    //matrix test = csdeconv(R_RH, DW_SH, HR_SH, SS, lambda, tau);
-    
-    //printMat(test);
-    //printf("rows: %d\n", test.row);
-    //printf("cols: %d\n", test.col);
     
     float* CSD_image = malloc(sizeof(float) * diff.nii_image->nz * diff.nii_image->ny * diff.nii_image->nx);
     
@@ -313,7 +183,85 @@ int main(int argc, char**argv)
         }
     }
     
-    matrix test = csdeconv(fc, DW_SH, HR_SH, SS, lambda, tau);
+    printf("RESPONSE FUNCTION DONE1. \n");
+
+//    printf("diff.nii_image->nx: %d\n", diff.nii_image->nx);
+//    printf("diff.nii_image->ny: %d\n", diff.nii_image->ny);
+//    printf("diff.nii_image->nz: %d\n", diff.nii_image->nz);
+    
+    double diff_time = diff.delta_lg - diff.delta_sm/3.0;
+    double determ_d  = (mow.deco_evals[0] *
+                        mow.deco_evals[1] *
+                        mow.deco_evals[2]);
+    double w_scale = sqrt( pow((4.0*M_PI*diff_time),3) * determ_d );
+    double *reco_matrix = mow.reco_matrix;
+    int counter = 0;
+    
+//    for (int vy=0; vy < diff.nii_image->ny; vy++)
+//    {
+//        for (int vx=0; vx < diff.nii_image->nx; vx++)
+//        {
+//            double min = 1.0e+99, max = 0;
+//            int n_maxima = 0;
+//            double* e = NULL;
+//
+//            MAXIMA* max_list = malloc(sizeof(MAXIMA)*mow.reco_tess->num_vertices);
+//
+//            int load_ok = load_voxel_double_highb(&diff, vx, vy, 45);
+//
+//            /* diff-weighted data (S) - spherical harmonics */
+//            e = diff.single_voxel_storage;
+//            // printf("e: %f\n", e[60]);
+//            float* dS = malloc(sizeof(float) * diff.n_volumes);
+//            for (int i = 0; i < diff.n_volumes; i++)
+//            {
+//                dS[i] = e[i];
+//                //printf("dS[%d]: %f, ", i, dS[i]);
+//            }
+//            //printf("\n");
+//            matrix S = assignMat(diff.n_volumes, 1, dS);
+//            matrix cs;
+    
+    
+//            //matrix cs = csdeconv(fc, DW_SH, HR_SH, S, lambda, tau);
+//
+//            // reset coef to 0 for next run
+//            memset(coef, 0, n_reco_dirs*sizeof(double));
+//
+//            for (int rec = 0; rec < n_reco_dirs; rec++)
+//            {
+//                for (int dec = 0; dec < 45; dec++)
+//                {
+//                    coef[rec] += cs.data[dec]/w_scale * reco_matrix[dec*n_reco_dirs+rec];
+//                }
+//                if (coef[rec] > max)
+//                {
+//                    max = coef[rec];
+//                }
+//                if (coef[rec] < min)
+//                {
+//                    min = coef[rec];
+//                }
+//            }
+//
+//            if (1)
+//            {
+//                for (int rec=0; rec < n_reco_dirs && min != max; rec++)
+//                {
+//                    coef[rec] = (coef[rec]-min) / (max-min);
+//                }
+//            }
+//
+//            n_maxima = find_local_maxima(reco_tess, coef, mow.prob_thresh, restart_tess, maxima_list);
+//
+//            // add_maxima_to_output(output, vx, vy, 45, U, maxima_list, n_maxima);
+//
+//
+//        }
+//
+//    }
+    
+    
     
     matrix m_csd;
     count = 0;
@@ -323,12 +271,13 @@ int main(int argc, char**argv)
         {
             for (int vx=0; vx < diff.nii_image->nx; vx++)
             {
-
+                double min = 1.0e+99, max = 0;
                 int n_maxima = 0;
                 double* e = NULL;
-                
+                matrix S;
+
                 MAXIMA* max_list = malloc(sizeof(MAXIMA)*mow.reco_tess->num_vertices);
-                
+
                 int load_ok = load_voxel_double_highb(&diff, vx, vy, vz);
 
                 if (-1 == load_ok)
@@ -351,7 +300,7 @@ int main(int argc, char**argv)
                     count++;
                     continue;
                 }
-            
+
                 /* diff-weighted data (S) - spherical harmonics */
                 e = diff.single_voxel_storage;
                 // printf("e: %f\n", e[60]);
@@ -362,52 +311,87 @@ int main(int argc, char**argv)
                     //printf("dS[%d]: %f, ", i, dS[i]);
                 }
                 //printf("\n");
-                matrix S = assignMat(diff.n_volumes, 1, dS);
-                
-                csdeconv(fc, DW_SH, HR_SH, S, lambda, tau);
-                
-                /* reset coef to 0 for next run */
-                memset(coef, 0, n_reco_dirs*sizeof(double));
-    
+                S = assignMat(diff.n_volumes, 1, dS);
 
-                // n_maxima = find_local_maxima(reco_tess, coef, mow.prob_thresh, restart_tess, maxima_list);
+                matrix cs = csdeconv(fc, DW_SH, HR_SH, S, lambda, tau);
+//                // printf("%d, %d, %d\n", vx, vy, vz);
+//
+//                /* reset coef to 0 for next run */
+//                memset(coef, 0, n_reco_dirs*sizeof(double));
+//
+//                /* normalization constant */
+//                double norm = 0;
+//                for (int rec = 0; rec < n_reco_dirs; rec++)
+//                {
+//                    for (int dec = 0; dec < 45; dec++)
+//                    {
+//                        coef[rec] += cs.data[dec]/w_scale * reco_matrix[dec*n_reco_dirs+rec];
+//                    }
+//                    if (coef[rec] > max)
+//                    {
+//                        max = coef[rec];
+//                    }
+//                    if (coef[rec] < min)
+//                    {
+//                        min = coef[rec];
+//                    }
+//                }
+//
+//                if (1)
+//                {
+//                    for (int rec=0; rec < n_reco_dirs && min != max; rec++)
+//                    {
+//                        coef[rec] = (coef[rec]-min) / (max-min);
+//                    }
+//                }
+//
+//                n_maxima = find_local_maxima(reco_tess, coef, mow.prob_thresh, restart_tess, maxima_list);
+//
+//                add_maxima_to_output(output, vx, vy, vz, U, maxima_list, n_maxima);
+//
+//
+//
+//                 n_maxima = find_local_maxima(reco_tess, coef, mow.prob_thresh, restart_tess, maxima_list);
 //
 //                add_maxima_to_output(output, vx, vy, vz, reco_tess->vertices, maxima_list, n_maxima);
-//
-                // CSD_image[count] = csdeconv(R_RH, DW_SH, HR_SH, SS, lambda, tau);
-//
+
+                 // CSD_image[count] = csdeconv(R_RH, DW_SH, HR_SH, SS, lambda, tau);
+
             }
         }
-        // fprintf(stderr, "Slice: %d of %d Complete.\n", vz, diff.nii_image->nz);
+        fprintf(stderr, "Slice: %d of %d Complete.\n", vz, diff.nii_image->nz);
         fflush(stderr);
     }
 
-//    if (mow.S0compute == 1)
-//    {
-//
-//        nifti_image *S0_nim = nifti_simple_init_nim();
-//        memcpy(S0_nim, diff.nii_image, sizeof(nifti_image));
-//
-//        S0_nim->datatype = DT_FLOAT32;
-//        S0_nim->ndim     = 3;
-//        S0_nim->nbyper   = 4;
-//        S0_nim->nt       = 1;
-//        S0_nim->nvox     = S0_nim->nx * S0_nim->ny * S0_nim->nz;
-//        S0_nim->dim[4]   = 1;
-//        S0_nim->dim[0]   = 3;
-//        S0_nim->data     = CSD_image;
-//        S0_nim->fname    = mow.S0_filename;
-//        S0_nim->iname    = mow.S0_filename;
-//        S0_nim->cal_max  = 0.0;
-//        S0_nim->cal_min  = 0.0;
-//
-//        fprintf(stderr, "Saving S0 image to %s.\n", mow.S0_filename);
-//        znzFile fp = znzopen(mow.S0_filename, "wb", 0);
-//        nifti_image_write_hdr_img2(S0_nim, 1, "wb", fp, NULL);
-//    }
+    if (mow.S0compute == 1)
+    {
 
+        nifti_image *S0_nim = nifti_simple_init_nim();
+        memcpy(S0_nim, diff.nii_image, sizeof(nifti_image));
+
+        S0_nim->datatype = DT_FLOAT32;
+        S0_nim->ndim     = 3;
+        S0_nim->nbyper   = 4;
+        S0_nim->nt       = 1;
+        S0_nim->nvox     = S0_nim->nx * S0_nim->ny * S0_nim->nz;
+        S0_nim->dim[4]   = 1;
+        S0_nim->dim[0]   = 3;
+        S0_nim->data     = CSD_image;
+        S0_nim->fname    = mow.S0_filename;
+        S0_nim->iname    = mow.S0_filename;
+        S0_nim->cal_max  = 0.0;
+        S0_nim->cal_min  = 0.0;
+        
+
+        fprintf(stderr, "Saving S0 image to %s.\n", mow.S0_filename);
+        znzFile fp = znzopen(mow.S0_filename, "wb", 0);
+        nifti_image_write_hdr_img2(S0_nim, 1, "wb", fp, NULL);
+    }
+    
+    fflush(stderr);
     fprintf(stderr, "CSD Reconstruction complete... saving output...\n");
-//    save_output(mow.output_directory, output);
+    // printf("output->num_images: %d\n", output->num_images);
+    save_output(mow.output_directory, output);
 
     fprintf(stderr, "Done.\n");
     
@@ -941,7 +925,7 @@ OUTPUT_DATA *initialize_output (nifti_image *template, int nfiles)
  * the process is repeated for each maxima.
  *****************************************************************************/
 void add_maxima_to_output(OUTPUT_DATA *output, int x, int y, int z,
-                          float **vertlist, MAXIMA *maxima_list, int n_maxima)
+                          double **vertlist, MAXIMA *maxima_list, int n_maxima)
 {
     
     int i;
@@ -954,10 +938,14 @@ void add_maxima_to_output(OUTPUT_DATA *output, int x, int y, int z,
     }
     
     for (i=0; i<n_maxima; i++) {
-        float *mvert = vertlist[ maxima_list[i].index ];
-        ((float *)output->nbl[i]->bricks[0])[index] = mvert[0];
-        ((float *)output->nbl[i]->bricks[1])[index] = mvert[1];
-        ((float *)output->nbl[i]->bricks[2])[index] = mvert[2];
+//        float *mvert = vertlist[ maxima_list[i].index ];
+//        ((float *)output->nbl[i]->bricks[0])[index] = mvert[0];
+//        ((float *)output->nbl[i]->bricks[1])[index] = mvert[1];
+//        ((float *)output->nbl[i]->bricks[2])[index] = mvert[2];
+        
+        ((float *)output->nbl[i]->bricks[0])[index] = vertlist[0][maxima_list[i].index];
+        ((float *)output->nbl[i]->bricks[1])[index] = vertlist[1][maxima_list[i].index];
+        ((float *)output->nbl[i]->bricks[2])[index] = vertlist[2][maxima_list[i].index];
     }
     
 }

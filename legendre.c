@@ -30,9 +30,9 @@ matrix* legendre(int order, double el[], int num_el, matrix* legend)
         }
     }
     
-    float argtest[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    //float argtest[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     assignMat(order+1, num_el, leg, legend);
-    free(argtest);
+    //free(argtest);
     return legend;
 }
 

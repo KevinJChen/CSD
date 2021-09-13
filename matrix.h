@@ -36,7 +36,7 @@ matrix* cosMat(matrix* mat1, matrix* cosM);
 matrix* eleMultiplyMat(matrix* mat1, matrix* mat2, matrix* prod);
 matrix* rightDivideMat(matrix* mat1, matrix* mat2, matrix* quot);
 matrix* meanMat(matrix* mat1, matrix* mean);
-matrix* findMat(matrix* mat1, float threshold, matrix* find, matrix* found);
+matrix* findMat(matrix* mat1, float threshold, matrix* found);
 matrix* conjoinMat(matrix* mat1, matrix* mat2, matrix* conjoined);
 void freeMat(matrix* mat1);
 //

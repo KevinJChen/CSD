@@ -72,10 +72,11 @@ int main(int argc, char**argv)
     mow.restart_tess = restart_tess;
     
     int n = mow.reco_tess->num_vertices;
-    // printf("mow.reco_tess->num_vertices: %d\n", n);
+    printf("mow.reco_tess->num_vertices: %d\n", n);
     int n_reco_dirs = n;
     
     double** U = malloc(sizeof(double*)*3);
+    float* V = malloc(sizeof(float)*n*3);
     for (int i = 0; i < 3; i++)
     {
         U[i] = malloc(sizeof(double)*n);
@@ -85,6 +86,15 @@ int main(int argc, char**argv)
         U[0][i] = mow.reco_tess->vertices[i][0];
         U[1][i] = mow.reco_tess->vertices[i][1];
         U[2][i] = mow.reco_tess->vertices[i][2];
+    }
+    
+    int c = 0;
+    for (int i = 0; i < n*3; i=i+3)
+    {
+        V[i] = mow.reco_tess->vertices[c][0];
+        V[i+1] = mow.reco_tess->vertices[c][1];
+        V[i+2] = mow.reco_tess->vertices[c][2];
+        c++;
     }
     
     fprintf(stderr, "Computing reconstruction matrix...\n");
@@ -118,18 +128,23 @@ int main(int argc, char**argv)
     /* bvec list - split diff.n_volumes*3 */
     /* column1 ... column2 ... column3 */
     float *bvec = diff.bvecs;
-    matrix DW_SH = bvec2SH(bvec, diff.n_volumes*3);
-    
+    matrix* DW_SH = malloc(sizeof(matrix));
+    bvec2SH(bvec, diff.n_volumes*3, DW_SH);
+    //printMat(DW_SH);
     /*
      
      dir300  -> HR_SH
      
      */
     float *dir300 = malloc(sizeof(float)*900);
-    float *dSH = malloc(sizeof(float)*300);
+    //float *dSH = malloc(sizeof(float)*300);
     
     dir300 = diff.dir300;
-    matrix HR_SH = dir3002SH(dir300, 900);
+    matrix* HR_SH = malloc(sizeof(matrix));
+    dir3002SH(V, n*3, HR_SH);
+    
+    printf("HR_SH->row: %d\n", HR_SH->row);
+    printf("HR_SH->col: %d\n", HR_SH->col);
     
     /* lambda */
     float lambda = 1;
@@ -138,9 +153,8 @@ int main(int argc, char**argv)
     float tau = 0.1;
     
     float* CSD_image = malloc(sizeof(float) * diff.nii_image->nz * diff.nii_image->ny * diff.nii_image->nx);
-    
-    fprintf(stderr, "Starting CSD reconstruction...\n");
-    
+
+    fprintf(stderr, "Creating response function... \n");
     /* cc mask loop */
     long unsigned int count = 0;
     float* fc = malloc(sizeof(float) * cc.n_volumes);
@@ -182,8 +196,7 @@ int main(int argc, char**argv)
             }
         }
     }
-    
-    printf("RESPONSE FUNCTION DONE1. \n");
+
 
 //    printf("diff.nii_image->nx: %d\n", diff.nii_image->nx);
 //    printf("diff.nii_image->ny: %d\n", diff.nii_image->ny);
@@ -197,74 +210,11 @@ int main(int argc, char**argv)
     double *reco_matrix = mow.reco_matrix;
     int counter = 0;
     
-//    for (int vy=0; vy < diff.nii_image->ny; vy++)
-//    {
-//        for (int vx=0; vx < diff.nii_image->nx; vx++)
-//        {
-//            double min = 1.0e+99, max = 0;
-//            int n_maxima = 0;
-//            double* e = NULL;
-//
-//            MAXIMA* max_list = malloc(sizeof(MAXIMA)*mow.reco_tess->num_vertices);
-//
-//            int load_ok = load_voxel_double_highb(&diff, vx, vy, 45);
-//
-//            /* diff-weighted data (S) - spherical harmonics */
-//            e = diff.single_voxel_storage;
-//            // printf("e: %f\n", e[60]);
-//            float* dS = malloc(sizeof(float) * diff.n_volumes);
-//            for (int i = 0; i < diff.n_volumes; i++)
-//            {
-//                dS[i] = e[i];
-//                //printf("dS[%d]: %f, ", i, dS[i]);
-//            }
-//            //printf("\n");
-//            matrix S = assignMat(diff.n_volumes, 1, dS);
-//            matrix cs;
+    fprintf(stderr, "Starting CSD reconstruction...\n");
     
-    
-//            //matrix cs = csdeconv(fc, DW_SH, HR_SH, S, lambda, tau);
-//
-//            // reset coef to 0 for next run
-//            memset(coef, 0, n_reco_dirs*sizeof(double));
-//
-//            for (int rec = 0; rec < n_reco_dirs; rec++)
-//            {
-//                for (int dec = 0; dec < 45; dec++)
-//                {
-//                    coef[rec] += cs.data[dec]/w_scale * reco_matrix[dec*n_reco_dirs+rec];
-//                }
-//                if (coef[rec] > max)
-//                {
-//                    max = coef[rec];
-//                }
-//                if (coef[rec] < min)
-//                {
-//                    min = coef[rec];
-//                }
-//            }
-//
-//            if (1)
-//            {
-//                for (int rec=0; rec < n_reco_dirs && min != max; rec++)
-//                {
-//                    coef[rec] = (coef[rec]-min) / (max-min);
-//                }
-//            }
-//
-//            n_maxima = find_local_maxima(reco_tess, coef, mow.prob_thresh, restart_tess, maxima_list);
-//
-//            // add_maxima_to_output(output, vx, vy, 45, U, maxima_list, n_maxima);
-//
-//
-//        }
-//
-//    }
-    
-    
-    
-    matrix m_csd;
+    matrix* m_csd;
     count = 0;
+    matrix* S = malloc(sizeof(matrix));
     for (int vz=0; vz < diff.nii_image->nz; vz++)
     {
         for (int vy=0; vy < diff.nii_image->ny; vy++)
@@ -274,8 +224,7 @@ int main(int argc, char**argv)
                 double min = 1.0e+99, max = 0;
                 int n_maxima = 0;
                 double* e = NULL;
-                matrix S;
-
+                
                 MAXIMA* max_list = malloc(sizeof(MAXIMA)*mow.reco_tess->num_vertices);
 
                 int load_ok = load_voxel_double_highb(&diff, vx, vy, vz);
@@ -311,9 +260,10 @@ int main(int argc, char**argv)
                     //printf("dS[%d]: %f, ", i, dS[i]);
                 }
                 //printf("\n");
-                S = assignMat(diff.n_volumes, 1, dS);
+                assignMat(diff.n_volumes, 1, dS, S);
 
-                matrix cs = csdeconv(fc, DW_SH, HR_SH, S, lambda, tau);
+                //matrix* cs = malloc(sizeof(matrix));
+                //csdeconv(fc, DW_SH, HR_SH, S, lambda, tau, cs);
 //                // printf("%d, %d, %d\n", vx, vy, vz);
 //
 //                /* reset coef to 0 for next run */
@@ -397,7 +347,7 @@ int main(int argc, char**argv)
     
     /* free memory */
     free(dir300);
-    free(dSH);
+    //free(dSH);
     free(CSD_image);
     
     return 0;

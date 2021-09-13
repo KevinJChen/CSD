@@ -277,7 +277,7 @@ matrix* meanMat(matrix* mat1, matrix* mean)
 }
 
 /* find where mat2.data < threshold */
-matrix* findMat(matrix* mat1, float threshold, matrix* mean, matrix* found)
+matrix* findMat(matrix* mat1, float threshold, matrix* found)
 {
     // mat 1 should always have one column
     int counter = 0;

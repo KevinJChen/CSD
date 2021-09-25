@@ -18,7 +18,7 @@
 #include "qr_solve.h"
 
 matrix* csdeconv(float* R_RH, matrix* DW_SH, matrix* HR_SH, matrix* S, float lambda, float tau, matrix* F_SH);
-matrix* SH2amp(matrix* csd, float* V, matrix* amp);
+matrix* SH2amp(matrix* csd, matrix* HR_SH, matrix* amp);
 int nSH_for_lmax(int lmax);
 
 #endif /* CSD_h */

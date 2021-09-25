@@ -143,9 +143,6 @@ int main(int argc, char**argv)
     matrix* HR_SH = malloc(sizeof(matrix));
     dir3002SH(V, n*3, HR_SH);
     
-    printf("HR_SH->row: %d\n", HR_SH->row);
-    printf("HR_SH->col: %d\n", HR_SH->col);
-    
     /* lambda */
     float lambda = 1;
     
@@ -262,8 +259,9 @@ int main(int argc, char**argv)
                 //printf("\n");
                 assignMat(diff.n_volumes, 1, dS, S);
 
-                //matrix* cs = malloc(sizeof(matrix));
-                //csdeconv(fc, DW_SH, HR_SH, S, lambda, tau, cs);
+                matrix* cs = malloc(sizeof(matrix));
+                csdeconv(fc, DW_SH, HR_SH, S, lambda, tau, cs);
+                matrix* amp = malloc(sizeof(matrix));
 //                // printf("%d, %d, %d\n", vx, vy, vz);
 //
 //                /* reset coef to 0 for next run */

@@ -72,7 +72,7 @@ int main(int argc, char**argv)
     mow.restart_tess = restart_tess;
     
     int n = mow.reco_tess->num_vertices;
-    printf("mow.reco_tess->num_vertices: %d\n", n);
+    //printf("mow.reco_tess->num_vertices: %d\n", n);
     int n_reco_dirs = n;
     
     double** U = malloc(sizeof(double*)*3);
@@ -198,7 +198,6 @@ int main(int argc, char**argv)
 //    printf("diff.nii_image->nx: %d\n", diff.nii_image->nx);
 //    printf("diff.nii_image->ny: %d\n", diff.nii_image->ny);
 //    printf("diff.nii_image->nz: %d\n", diff.nii_image->nz);
-    
     double diff_time = diff.delta_lg - diff.delta_sm/3.0;
     double determ_d  = (mow.deco_evals[0] *
                         mow.deco_evals[1] *
@@ -262,18 +261,24 @@ int main(int argc, char**argv)
                 matrix* cs = malloc(sizeof(matrix));
                 csdeconv(fc, DW_SH, HR_SH, S, lambda, tau, cs);
                 matrix* amp = malloc(sizeof(matrix));
+                SH2amp(cs, HR_SH, amp);
 //                // printf("%d, %d, %d\n", vx, vy, vz);
 //
-//                /* reset coef to 0 for next run */
-//                memset(coef, 0, n_reco_dirs*sizeof(double));
+                // reset coef to 0 for next run
+                memset(coef, 0, n_reco_dirs*sizeof(double));
+                
+                for (int rec = 0; rec < n_reco_dirs; rec++)
+                {
+                    coef[rec] = amp->data[rec];
+                }
 //
 //                /* normalization constant */
 //                double norm = 0;
 //                for (int rec = 0; rec < n_reco_dirs; rec++)
 //                {
-//                    for (int dec = 0; dec < 45; dec++)
+//                    for (int dec = 0; dec < n_reco_dirs; dec++)
 //                    {
-//                        coef[rec] += cs.data[dec]/w_scale * reco_matrix[dec*n_reco_dirs+rec];
+//                        coef[rec] += cs->data[dec]/w_scale * reco_matrix[dec*n_reco_dirs+rec];
 //                    }
 //                    if (coef[rec] > max)
 //                    {
@@ -292,13 +297,13 @@ int main(int argc, char**argv)
 //                        coef[rec] = (coef[rec]-min) / (max-min);
 //                    }
 //                }
-//
-//                n_maxima = find_local_maxima(reco_tess, coef, mow.prob_thresh, restart_tess, maxima_list);
-//
-//                add_maxima_to_output(output, vx, vy, vz, U, maxima_list, n_maxima);
-//
-//
-//
+
+                n_maxima = find_local_maxima(reco_tess, coef, mow.prob_thresh, restart_tess, maxima_list);
+
+                add_maxima_to_output(output, vx, vy, vz, U, maxima_list, n_maxima);
+
+
+
 //                 n_maxima = find_local_maxima(reco_tess, coef, mow.prob_thresh, restart_tess, maxima_list);
 //
 //                add_maxima_to_output(output, vx, vy, vz, reco_tess->vertices, maxima_list, n_maxima);

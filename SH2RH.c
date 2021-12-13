@@ -247,7 +247,6 @@ matrix* eval_SH(int l, float* el, size_t size_e, matrix* az, matrix* SH)
 //        }
              
     }
-    
     // evaluate legendre polynomials
     matrix* ev = malloc(sizeof(matrix));
     eval_ALP(l, el, size_e, ev);
@@ -256,14 +255,12 @@ matrix* eval_SH(int l, float* el, size_t size_e, matrix* az, matrix* SH)
     transposeMat(s, trans);
     
     eleMultiplyMat(ev, trans, SH);
-    
-    freeMat(aaz);
-    freeMat(paz);
-    freeMat(ev);
-    freeMat(trans);
-    freeMat(scapaz);
-    freeMat(scaaaz);
-
+//    freeMat(aaz);
+//    freeMat(paz);
+//    freeMat(ev);
+//    freeMat(trans);
+//    freeMat(scapaz);
+//    freeMat(scaaaz);
     return SH;
 }
 
@@ -304,7 +301,6 @@ matrix* eval_ALP(int l, float* el, size_t size, matrix* leg)
         }
     }
 
-    
     if (l != 0)
     {
         float * leg1data = malloc((leg->row*2-1)*leg->col * sizeof(float));
@@ -333,10 +329,9 @@ matrix* eval_ALP(int l, float* el, size_t size, matrix* leg)
         free(leg1data);
     }
     
-    freeMat(els);
+    //freeMat(els);
     // free(cosEls);
-    free(dEls);
-
+    //free(dEls);
     return leg;
 }
 
@@ -456,7 +451,7 @@ matrix* dir3002SH(float * dir300, size_t size, matrix* SH)
     free(cdir300);
     free(n);
     free(P);
-    freeMat(transaz);
+//    freeMat(transaz);
 
    //  matrix SH = transposeMat(eval_SH(0, el, size/3, az));
     matrix* add_temp = malloc(sizeof(matrix));
@@ -471,11 +466,11 @@ matrix* dir3002SH(float * dir300, size_t size, matrix* SH)
         conjoinMat(SH, add_temp, SH);
     }
     
-    freeMat(add_temp);
-    freeMat(trans_temp);
-    free(el);
-    free(daz);
-    freeMat(az);
+//    freeMat(add_temp);
+//    freeMat(trans_temp);
+//    free(el);
+//    free(daz);
+//    freeMat(az);
 
     return SH;
 }
@@ -562,7 +557,6 @@ matrix* bvec2SH(float* bvec, size_t size, matrix* SH)
         daz[i-k_size] = P[i];
     }
 
-
     //matrix az = assignMat(k_size, 1, daz);
     matrix* az = malloc(sizeof(matrix));
     assignMat(k_size, 1, daz, az);
@@ -585,15 +579,15 @@ matrix* bvec2SH(float* bvec, size_t size, matrix* SH)
         conjoinMat(SH, add_temp, SH);
     }
     
-    freeMat(eval_az);
-    free(cbvec);
-    free(n);
-    free(P);
-    free(daz);
-    free(el);
-    freeMat(az);
-    freeMat(add_temp);
-    freeMat(eval_temp);
+//    freeMat(eval_az);
+//    free(cbvec);
+//    free(n);
+//    free(P);
+//    free(daz);
+//    free(el);
+//    freeMat(az);
+//    freeMat(add_temp);
+//    freeMat(eval_temp);
     
     return SH;
 

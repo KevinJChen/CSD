@@ -75,8 +75,9 @@ matrix* csdeconv(float* R_RH, matrix* DW_SH, matrix* HR_SH, matrix* S, float lam
 
     free(m);
     free(dfconv);
-    freeMat(rfconv);
+//    freeMat(rfconv);
     //free(fconv);
+
 
     /*
 
@@ -135,8 +136,8 @@ matrix* csdeconv(float* R_RH, matrix* DW_SH, matrix* HR_SH, matrix* S, float lam
     scalarMat(tau, mt);
     // matrix mt = scalarMat(tau, meanMat(multiplyMat(HR_SH, F_SH)));
     float threshold = mt->data[0];
-    freeMat(multmt);
-    freeMat(mt);
+//    freeMat(multmt);
+//    freeMat(mt);
 
 
     // scale lambda to account for differences in the number of
@@ -171,7 +172,7 @@ matrix* csdeconv(float* R_RH, matrix* DW_SH, matrix* HR_SH, matrix* S, float lam
     assignMat(fconv->row, HR_SH->col, ndfconv, nfconv);
 //    /* --- */ matrix nfconv = assignMat(fconv->row, HR_SH->col, ndfconv, nfconv);
     free(ndfconv);
-    freeMat(fconv);
+//    freeMat(fconv);
 
 
 //    // /* --- */ float* dk = malloc(sizeof(float));
@@ -187,10 +188,10 @@ matrix* csdeconv(float* R_RH, matrix* DW_SH, matrix* HR_SH, matrix* S, float lam
         if ((k2->row + nfconv->row) < HR_SH->col)
         {
             printf("ERROR: Too few negative directions identified - failed to converge\n");
-            freeMat(k);
-            freeMat(A);
-            freeMat(k2);
-            freeMat(nfconv);
+//            freeMat(k);
+//            freeMat(A);
+//            freeMat(k2);
+//            freeMat(nfconv);
             return F_SH;
         }
 
@@ -206,10 +207,10 @@ matrix* csdeconv(float* R_RH, matrix* DW_SH, matrix* HR_SH, matrix* S, float lam
             }
             if (same == true)
             {
-                freeMat(k);
-                freeMat(A);
-                freeMat(k2);
-                freeMat(nfconv);
+//                freeMat(k);
+//                freeMat(A);
+//                freeMat(k2);
+//                freeMat(nfconv);
                 return F_SH;
             }
         }
@@ -236,7 +237,7 @@ matrix* csdeconv(float* R_RH, matrix* DW_SH, matrix* HR_SH, matrix* S, float lam
         assignMat(k->row, HR_SH->col, dHRSH, second);
         scalarMat(lambda, second);
         free(dHRSH);
-        freeMat(second);
+//        freeMat(second);
 
 //        /* --- */ float* dM = malloc((second->row+nfconv->row)*second->col*sizeof(float));
 //        /* --- */ double* ddM = malloc((second->row+nfconv->row)*second->col*sizeof(double));
